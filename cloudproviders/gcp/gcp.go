@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"google.golang.org/api/compute/v1"
 	"google.golang.org/api/option"
+	"log"
 	"os"
 )
 
@@ -40,7 +41,13 @@ func getConfig(filepath string) (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			log.Printf("Failed to close file: %v", err)
+			return
+		}
+	}(file)
 	// decode the json file
 	decoder := json.NewDecoder(file)
 	config := Config{}
