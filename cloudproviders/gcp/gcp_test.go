@@ -3,7 +3,7 @@ package gcp
 import (
 	"context"
 	"github.com/golang/mock/gomock"
-	compute "google.golang.org/api/compute/v1"
+	"google.golang.org/api/compute/v1"
 	"google.golang.org/api/container/v1"
 	"testing"
 )
