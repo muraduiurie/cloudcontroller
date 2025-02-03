@@ -15,13 +15,13 @@ func main() {
 	ctx := context.Background()
 	//zone := "us-central1-a"
 
-	gcpCompute, err := gcp.NewComputeClient(ctx, gcpSaFilePath)
+	gcpApi, err := gcp.NewAPI(ctx, gcpSaFilePath)
 	if err != nil {
-		log.Fatalf("Error creating GCP client: %v", err)
+		log.Fatalf("Error creating GCP API: %v", err)
 	}
 
 	//List instances
-	resp, err := gcpCompute.CreateNetwork(ctx, &compute.Network{
+	resp, err := gcpApi.CreateNetwork(ctx, &compute.Network{
 		AutoCreateSubnetworks: true,
 		Name:                  "test-network",
 	})

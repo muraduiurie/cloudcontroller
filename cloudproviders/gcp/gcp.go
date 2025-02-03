@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"google.golang.org/api/compute/v1"
+	"google.golang.org/api/container/v1"
 	"google.golang.org/api/option"
 	"log"
 	"os"
@@ -24,14 +25,23 @@ type Config struct {
 }
 
 type ServiceInterface interface {
-	ListInstances(ctx context.Context, project string, zone string) (*compute.InstanceList, error)
-	ListNetworks(ctx context.Context, project string) (*compute.NetworkList, error)
+	ListInstances(ctx context.Context, zone string) (*compute.InstanceList, error)
+	ListNetworks(ctx context.Context) (*compute.NetworkList, error)
 	GetNetwork(ctx context.Context, nid string) (*compute.Network, error)
 	CreateNetwork(ctx context.Context, network *compute.Network) (*compute.Operation, error)
 	DeleteNetwork(ctx context.Context, nid string) (*compute.Operation, error)
 }
 type Compute struct {
 	Client *compute.Service
+}
+
+type Container struct {
+	Client *container.Service
+}
+
+type API struct {
+	Compute   *Compute
+	Container *Container
 	Config
 }
 
@@ -58,54 +68,63 @@ func getConfig(filepath string) (Config, error) {
 	return config, nil
 }
 
-func NewComputeClient(ctx context.Context, gcpSaFilePath string) (*Compute, error) {
+func NewAPI(ctx context.Context, gcpSaFilePath string) (*API, error) {
 	config, err := getConfig(gcpSaFilePath)
 	if err != nil {
 		return nil, err
 	}
 
-	// Authenticate using the service account file
 	computeService, err := compute.NewService(ctx, option.WithCredentialsFile(gcpSaFilePath))
 	if err != nil {
 		return nil, err
 	}
-	return &Compute{Client: computeService, Config: config}, nil
+
+	containerService, err := container.NewService(ctx, option.WithCredentialsFile(gcpSaFilePath))
+	if err != nil {
+		return nil, err
+	}
+
+	return &API{
+		Compute:   &Compute{Client: computeService},
+		Container: &Container{Client: containerService},
+		Config:    config,
+	}, nil
 }
 
-func (g *Compute) ListInstances(ctx context.Context, project string, zone string) (*compute.InstanceList, error) {
-	resp, err := g.Client.Instances.List(project, zone).Context(ctx).Do()
+func (a *API) ListInstances(ctx context.Context, zone string) (*compute.InstanceList, error) {
+	resp, err := a.Compute.Client.Instances.List(a.ProjectId, zone).Context(ctx).Do()
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
 }
 
-func (g *Compute) ListNetworks(ctx context.Context, project string) (*compute.NetworkList, error) {
-	resp, err := g.Client.Networks.List(project).Context(ctx).Do()
+func (a *API) ListNetworks(ctx context.Context) (*compute.NetworkList, error) {
+	resp, err := a.Compute.Client.Networks.List(a.ProjectId).Context(ctx).Do()
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
 }
 
-func (g *Compute) GetNetwork(ctx context.Context, nid string) (*compute.Network, error) {
-	resp, err := g.Client.Networks.Get(g.ProjectId, nid).Context(ctx).Do()
+func (a *API) GetNetwork(ctx context.Context, nid string) (*compute.Network, error) {
+	resp, err := a.Compute.Client.Networks.Get(a.ProjectId, nid).Context(ctx).Do()
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
 }
 
-func (g *Compute) CreateNetwork(ctx context.Context, network *compute.Network) (*compute.Operation, error) {
-	resp, err := g.Client.Networks.Insert(g.ProjectId, network).Context(ctx).Do()
+func (a *API) CreateNetwork(ctx context.Context, network *compute.Network) (*compute.Operation, error) {
+	resp, err := a.Compute.Client.Networks.Insert(a.ProjectId, network).Context(ctx).Do()
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
 }
 
-func (g *Compute) DeleteNetwork(ctx context.Context, nid string) (*compute.Operation, error) {
-	resp, err := g.Client.Networks.Delete(g.ProjectId, nid).Context(ctx).Do()
+func (a *API) DeleteNetwork(ctx context.Context, nid string) (*compute.Operation, error) {
+	resp, err := a.Compute.Client.Networks.Delete(a.ProjectId, nid).Context(ctx).Do()
 	if err != nil {
 		return nil, err
 	}

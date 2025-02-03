@@ -8,8 +8,7 @@ import (
 )
 
 const (
-	project = "my-project"
-	zone    = "us-central1-a"
+	zone = "us-central1-a"
 )
 
 func TestCompute_ListInstances(t *testing.T) {
@@ -31,11 +30,11 @@ func TestCompute_ListInstances(t *testing.T) {
 	// Set up the mock to expect a call and return fakeInstances.
 	mockClient.
 		EXPECT().
-		ListInstances(gomock.Any(), project, zone).
+		ListInstances(gomock.Any(), zone).
 		Return(fakeInstances, nil)
 
 	// Call the mock
-	resp, err := mockClient.ListInstances(context.Background(), project, zone)
+	resp, err := mockClient.ListInstances(context.Background(), zone)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -64,11 +63,11 @@ func TestCompute_ListNetworks(t *testing.T) {
 	// Set up the mock to expect a call and return fakeNetworks.
 	mockClient.
 		EXPECT().
-		ListNetworks(gomock.Any(), project).
+		ListNetworks(gomock.Any()).
 		Return(fakeNetworks, nil)
 
 	// Call the mock
-	resp, err := mockClient.ListNetworks(context.Background(), project)
+	resp, err := mockClient.ListNetworks(context.Background())
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}

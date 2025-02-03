@@ -81,31 +81,31 @@ func (mr *MockServiceInterfaceMockRecorder) GetNetwork(ctx, nid interface{}) *go
 }
 
 // ListInstances mocks base method.
-func (m *MockServiceInterface) ListInstances(ctx context.Context, project, zone string) (*compute.InstanceList, error) {
+func (m *MockServiceInterface) ListInstances(ctx context.Context, zone string) (*compute.InstanceList, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListInstances", ctx, project, zone)
+	ret := m.ctrl.Call(m, "ListInstances", ctx, zone)
 	ret0, _ := ret[0].(*compute.InstanceList)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListInstances indicates an expected call of ListInstances.
-func (mr *MockServiceInterfaceMockRecorder) ListInstances(ctx, project, zone interface{}) *gomock.Call {
+func (mr *MockServiceInterfaceMockRecorder) ListInstances(ctx, zone interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListInstances", reflect.TypeOf((*MockServiceInterface)(nil).ListInstances), ctx, project, zone)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListInstances", reflect.TypeOf((*MockServiceInterface)(nil).ListInstances), ctx, zone)
 }
 
 // ListNetworks mocks base method.
-func (m *MockServiceInterface) ListNetworks(ctx context.Context, project string) (*compute.NetworkList, error) {
+func (m *MockServiceInterface) ListNetworks(ctx context.Context) (*compute.NetworkList, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListNetworks", ctx, project)
+	ret := m.ctrl.Call(m, "ListNetworks", ctx)
 	ret0, _ := ret[0].(*compute.NetworkList)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListNetworks indicates an expected call of ListNetworks.
-func (mr *MockServiceInterfaceMockRecorder) ListNetworks(ctx, project interface{}) *gomock.Call {
+func (mr *MockServiceInterfaceMockRecorder) ListNetworks(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListNetworks", reflect.TypeOf((*MockServiceInterface)(nil).ListNetworks), ctx, project)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListNetworks", reflect.TypeOf((*MockServiceInterface)(nil).ListNetworks), ctx)
 }
