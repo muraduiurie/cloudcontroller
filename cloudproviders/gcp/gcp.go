@@ -30,6 +30,9 @@ type ServiceInterface interface {
 	GetNetwork(ctx context.Context, nid string) (*compute.Network, error)
 	CreateNetwork(ctx context.Context, network *compute.Network) (*compute.Operation, error)
 	DeleteNetwork(ctx context.Context, nid string) (*compute.Operation, error)
+	ListClusters(ctx context.Context, zone string) (*container.ListClustersResponse, error)
+	CreateCluster(ctx context.Context, zone string, cluster *container.Cluster) (*container.Operation, error)
+	DeleteCluster(ctx context.Context, zone, clusterName string) (*container.Operation, error)
 }
 type Compute struct {
 	Client *compute.Service
@@ -125,6 +128,34 @@ func (a *API) CreateNetwork(ctx context.Context, network *compute.Network) (*com
 
 func (a *API) DeleteNetwork(ctx context.Context, nid string) (*compute.Operation, error) {
 	resp, err := a.Compute.Client.Networks.Delete(a.ProjectId, nid).Context(ctx).Do()
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (a *API) ListClusters(ctx context.Context, zone string) (*container.ListClustersResponse, error) {
+	resp, err := a.Container.Client.Projects.Zones.Clusters.List(a.ProjectId, zone).Context(ctx).Do()
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (a *API) CreateCluster(ctx context.Context, zone string, cluster *container.Cluster) (*container.Operation, error) {
+	resp, err := a.Container.Client.Projects.Zones.Clusters.Create(a.ProjectId, zone, &container.CreateClusterRequest{
+		Cluster:   cluster,
+		Zone:      zone,
+		ProjectId: a.ProjectId,
+	}).Context(ctx).Do()
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (a *API) DeleteCluster(ctx context.Context, zone, clusterName string) (*container.Operation, error) {
+	resp, err := a.Container.Client.Projects.Zones.Clusters.Delete(a.ProjectId, zone, clusterName).Context(ctx).Do()
 	if err != nil {
 		return nil, err
 	}

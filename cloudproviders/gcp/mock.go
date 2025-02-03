@@ -10,6 +10,7 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	compute "google.golang.org/api/compute/v1"
+	container "google.golang.org/api/container/v1"
 )
 
 // MockServiceInterface is a mock of ServiceInterface interface.
@@ -35,6 +36,21 @@ func (m *MockServiceInterface) EXPECT() *MockServiceInterfaceMockRecorder {
 	return m.recorder
 }
 
+// CreateCluster mocks base method.
+func (m *MockServiceInterface) CreateCluster(ctx context.Context, zone string, cluster *container.Cluster) (*container.Operation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateCluster", ctx, zone, cluster)
+	ret0, _ := ret[0].(*container.Operation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateCluster indicates an expected call of CreateCluster.
+func (mr *MockServiceInterfaceMockRecorder) CreateCluster(ctx, zone, cluster interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateCluster", reflect.TypeOf((*MockServiceInterface)(nil).CreateCluster), ctx, zone, cluster)
+}
+
 // CreateNetwork mocks base method.
 func (m *MockServiceInterface) CreateNetwork(ctx context.Context, network *compute.Network) (*compute.Operation, error) {
 	m.ctrl.T.Helper()
@@ -48,6 +64,21 @@ func (m *MockServiceInterface) CreateNetwork(ctx context.Context, network *compu
 func (mr *MockServiceInterfaceMockRecorder) CreateNetwork(ctx, network interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateNetwork", reflect.TypeOf((*MockServiceInterface)(nil).CreateNetwork), ctx, network)
+}
+
+// DeleteCluster mocks base method.
+func (m *MockServiceInterface) DeleteCluster(ctx context.Context, zone, clusterName string) (*container.Operation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteCluster", ctx, zone, clusterName)
+	ret0, _ := ret[0].(*container.Operation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeleteCluster indicates an expected call of DeleteCluster.
+func (mr *MockServiceInterfaceMockRecorder) DeleteCluster(ctx, zone, clusterName interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteCluster", reflect.TypeOf((*MockServiceInterface)(nil).DeleteCluster), ctx, zone, clusterName)
 }
 
 // DeleteNetwork mocks base method.
@@ -78,6 +109,21 @@ func (m *MockServiceInterface) GetNetwork(ctx context.Context, nid string) (*com
 func (mr *MockServiceInterfaceMockRecorder) GetNetwork(ctx, nid interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNetwork", reflect.TypeOf((*MockServiceInterface)(nil).GetNetwork), ctx, nid)
+}
+
+// ListClusters mocks base method.
+func (m *MockServiceInterface) ListClusters(ctx context.Context, zone string) (*container.ListClustersResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListClusters", ctx, zone)
+	ret0, _ := ret[0].(*container.ListClustersResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListClusters indicates an expected call of ListClusters.
+func (mr *MockServiceInterfaceMockRecorder) ListClusters(ctx, zone interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListClusters", reflect.TypeOf((*MockServiceInterface)(nil).ListClusters), ctx, zone)
 }
 
 // ListInstances mocks base method.
