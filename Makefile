@@ -8,8 +8,8 @@ $(error "controller-gen is not installed. Install it with: go install sigs.k8s.i
 endif
 
 # Directories
-API_DIR := ./api/...
-CRD_OUTPUT_DIR := ./crds
+API_DIR := ./cmd/cloudcontroller/api/...
+CRD_OUTPUT_DIR := ./cmd/cloudcontroller/crds
 
 .PHONY: generate
 generate: ## Generate CRDs from Go structs
@@ -21,6 +21,12 @@ generate: ## Generate CRDs from Go structs
 install-crds: generate ## Apply generated CRDs to the cluster
 	@echo "Applying CRDs to cluster..."
 	kubectl apply -f $(CRD_OUTPUT_DIR)
+	@echo "CRDs applied."
+
+.PHONY: build operator image
+build: generate ## Build the operator
+	@echo "Building docker image..."
+	docker build -t $(IMG) .
 	@echo "CRDs applied."
 
 .PHONY: clean

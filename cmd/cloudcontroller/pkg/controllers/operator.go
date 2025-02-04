@@ -9,7 +9,7 @@ import (
 )
 
 func RunOperator(kubeconfig *rest.Config) error {
-	// create new manager with in cluster client and scheme
+	// create new manager with client and scheme
 	ctrl.SetLogger(zap.New())
 	mgr, err := ctrl.NewManager(kubeconfig, ctrl.Options{
 		Scheme: Scheme,
@@ -33,25 +33,20 @@ func runControllers(mgr manager.Manager) error {
 		return fmt.Errorf("unable to setup GKECluster controller: %w", err)
 	}
 
+	err = setupGKEInstanceController(mgr)
+	if err != nil {
+		return fmt.Errorf("unable to setup GKEInstance controller: %w", err)
+	}
+
+	err = setupGKENetworkController(mgr)
+	if err != nil {
+		return fmt.Errorf("unable to setup GKENetwork controller: %w", err)
+	}
+
 	// start manager
 	SetupLog.Info("starting controller manager")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
 		return fmt.Errorf("error running controller manager: %w", err)
-	}
-
-	return nil
-}
-
-func setupGKEClusterController(mgr manager.Manager) error {
-	cc := GKEClusterReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
-	}
-
-	// create GKECluster controller
-	err := cc.SetupWithManager(mgr)
-	if err != nil {
-		return fmt.Errorf("unable to create GKECluster controller: %w", err)
 	}
 
 	return nil
