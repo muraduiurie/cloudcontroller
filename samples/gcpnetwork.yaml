@@ -1,0 +1,7 @@
+apiVersion: benzaiten.io/v1
+kind: GCPNetwork
+metadata:
+  name: my-gcp-network
+spec:
+  name: my-gcp-network
+  autoCreateSubnetworks: true

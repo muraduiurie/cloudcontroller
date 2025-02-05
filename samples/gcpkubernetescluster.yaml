@@ -1,0 +1,7 @@
+apiVersion: benzaiten.io/v1
+kind: GCPKubernetesCluster
+metadata:
+  name: my-gcp-kubernetes-cluster
+spec:
+  name: my-gcp-kubernetes-cluster
+  initialNodeCount: 1

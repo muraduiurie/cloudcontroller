@@ -1,0 +1,6 @@
+apiVersion: benzaiten.io/v1
+kind: GCPInstance
+metadata:
+  name: my-gcp-instance
+spec:
+  name: my-gcp-instance

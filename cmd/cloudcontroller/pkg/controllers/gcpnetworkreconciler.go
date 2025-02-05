@@ -12,17 +12,17 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
 
-type GKENetworkReconciler struct {
+type GCPNetworkReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
 
-func (cr *GKENetworkReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (cr *GCPNetworkReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	logger := log.FromContext(ctx).WithValues("webpage", req.NamespacedName)
 
-	gk := cloudv1.GKENetwork{}
+	gk := cloudv1.GCPNetwork{}
 
-	err := cr.Client.Get(ctx, req.NamespacedName, &gk)
+	err := cr.Get(ctx, req.NamespacedName, &gk)
 	if err != nil {
 		if kerr.IsNotFound(err) {
 			logger.Info("webpage not found")
@@ -33,27 +33,27 @@ func (cr *GKENetworkReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 
 	// TODO: Add reconciliation logic here
 
-	logger.Info("gke network reconciled")
+	logger.Info("gcp network reconciled")
 
 	return ctrl.Result{}, nil
 }
 
-func (cr *GKENetworkReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (cr *GCPNetworkReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&cloudv1.GKENetwork{}).
+		For(&cloudv1.GCPNetwork{}).
 		Complete(cr)
 }
 
-func setupGKENetworkController(mgr manager.Manager) error {
-	cc := GKENetworkReconciler{
+func setupGCPNetworkController(mgr manager.Manager) error {
+	cc := GCPNetworkReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}
 
-	// create GKENetwork controller
+	// create GCPNetwork controller
 	err := cc.SetupWithManager(mgr)
 	if err != nil {
-		return fmt.Errorf("unable to create GKENetwork controller: %w", err)
+		return fmt.Errorf("unable to create GCPNetwork controller: %w", err)
 	}
 
 	return nil

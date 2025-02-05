@@ -10,5 +10,5 @@ Kubernetes Operator for deploying Cloud resources via Kubernetes CRDs
 
 #### Makefile commands:
 
-- `IMG=<image>:<tag> make build`: Build GCP Operator Docker image
+- `IMG=<image>:<tag> make build`: Build CloudController Operator Docker image
 - `make generate`: generate CRDs

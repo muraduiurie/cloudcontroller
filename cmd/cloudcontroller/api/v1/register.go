@@ -19,12 +19,12 @@ const (
 func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(
 		SchemaGroupVersion,
-		&GKECluster{},
-		&GKEClusterList{},
-		&GKEInstance{},
-		&GKEInstanceList{},
-		&GKENetwork{},
-		&GKENetworkList{},
+		&GCPKubernetesCluster{},
+		&GCPKubernetesClusterList{},
+		&GCPInstance{},
+		&GCPInstanceList{},
+		&GCPNetwork{},
+		&GCPNetworkList{},
 	)
 
 	metav1.AddToGroupVersion(scheme, SchemaGroupVersion)

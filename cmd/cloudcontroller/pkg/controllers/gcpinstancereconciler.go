@@ -12,17 +12,17 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
 
-type GKEInstanceReconciler struct {
+type GCPInstanceReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
 
-func (cr *GKEInstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (cr *GCPInstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	logger := log.FromContext(ctx).WithValues("webpage", req.NamespacedName)
 
-	gk := cloudv1.GKEInstance{}
+	gk := cloudv1.GCPInstance{}
 
-	err := cr.Client.Get(ctx, req.NamespacedName, &gk)
+	err := cr.Get(ctx, req.NamespacedName, &gk)
 	if err != nil {
 		if kerr.IsNotFound(err) {
 			logger.Info("webpage not found")
@@ -33,27 +33,27 @@ func (cr *GKEInstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request
 
 	// TODO: Add reconciliation logic here
 
-	logger.Info("gke instance reconciled")
+	logger.Info("gcp instance reconciled")
 
 	return ctrl.Result{}, nil
 }
 
-func (cr *GKEInstanceReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (cr *GCPInstanceReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&cloudv1.GKEInstance{}).
+		For(&cloudv1.GCPInstance{}).
 		Complete(cr)
 }
 
-func setupGKEInstanceController(mgr manager.Manager) error {
-	cc := GKEInstanceReconciler{
+func setupGCPInstanceController(mgr manager.Manager) error {
+	cc := GCPInstanceReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}
 
-	// create GKEInstance controller
+	// create GCPInstance controller
 	err := cc.SetupWithManager(mgr)
 	if err != nil {
-		return fmt.Errorf("unable to create GKEInstance controller: %w", err)
+		return fmt.Errorf("unable to create GCPInstance controller: %w", err)
 	}
 
 	return nil

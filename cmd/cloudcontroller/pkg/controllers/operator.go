@@ -11,6 +11,7 @@ import (
 func RunOperator(kubeconfig *rest.Config) error {
 	// create new manager with client and scheme
 	ctrl.SetLogger(zap.New())
+	ctrl.Log.Info("setting up manager")
 	mgr, err := ctrl.NewManager(kubeconfig, ctrl.Options{
 		Scheme: Scheme,
 	})
@@ -28,17 +29,17 @@ func RunOperator(kubeconfig *rest.Config) error {
 }
 
 func runControllers(mgr manager.Manager) error {
-	err := setupGKEClusterController(mgr)
+	err := setupGCPKubernetesClusterController(mgr)
 	if err != nil {
 		return fmt.Errorf("unable to setup GKECluster controller: %w", err)
 	}
 
-	err = setupGKEInstanceController(mgr)
+	err = setupGCPInstanceController(mgr)
 	if err != nil {
 		return fmt.Errorf("unable to setup GKEInstance controller: %w", err)
 	}
 
-	err = setupGKENetworkController(mgr)
+	err = setupGCPNetworkController(mgr)
 	if err != nil {
 		return fmt.Errorf("unable to setup GKENetwork controller: %w", err)
 	}

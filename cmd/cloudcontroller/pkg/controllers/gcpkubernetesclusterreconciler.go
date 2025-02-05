@@ -12,17 +12,17 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
 
-type GKEClusterReconciler struct {
+type GCPKubernetesClusterReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
 
-func (cr *GKEClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	logger := log.FromContext(ctx).WithValues("webpage", req.NamespacedName)
 
-	gk := cloudv1.GKECluster{}
+	gk := cloudv1.GCPKubernetesCluster{}
 
-	err := cr.Client.Get(ctx, req.NamespacedName, &gk)
+	err := cr.Get(ctx, req.NamespacedName, &gk)
 	if err != nil {
 		if kerr.IsNotFound(err) {
 			logger.Info("webpage not found")
@@ -33,27 +33,27 @@ func (cr *GKEClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 
 	// TODO: Add reconciliation logic here
 
-	logger.Info("gke cluster reconciled")
+	logger.Info("gcp kubernetes cluster reconciled")
 
 	return ctrl.Result{}, nil
 }
 
-func (cr *GKEClusterReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (cr *GCPKubernetesClusterReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&cloudv1.GKECluster{}).
+		For(&cloudv1.GCPKubernetesCluster{}).
 		Complete(cr)
 }
 
-func setupGKEClusterController(mgr manager.Manager) error {
-	cc := GKEClusterReconciler{
+func setupGCPKubernetesClusterController(mgr manager.Manager) error {
+	cc := GCPKubernetesClusterReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}
 
-	// create GKECluster controller
+	// create GCPKubernetesCluster controller
 	err := cc.SetupWithManager(mgr)
 	if err != nil {
-		return fmt.Errorf("unable to create GKECluster controller: %w", err)
+		return fmt.Errorf("unable to create GCPKubernetesCluster controller: %w", err)
 	}
 
 	return nil

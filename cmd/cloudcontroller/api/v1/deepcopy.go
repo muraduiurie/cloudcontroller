@@ -5,31 +5,31 @@ import (
 )
 
 // ---------------------------------------------------
-// GKECluster
+// GCPKubernetesCluster
 // ---------------------------------------------------
-func (in *GKECluster) DeepCopyInto(out *GKECluster) {
+func (in *GCPKubernetesCluster) DeepCopyInto(out *GCPKubernetesCluster) {
 	out.TypeMeta = in.TypeMeta
 	out.ObjectMeta = in.ObjectMeta
-	out.Spec = GKEClusterSpec{
+	out.Spec = GCPKubernetesClusterSpec{
 		Name:             in.Spec.Name,
 		InitialNodeCount: in.Spec.InitialNodeCount,
 	}
 }
 
-func (in *GKECluster) DeepCopyObject() runtime.Object {
-	out := GKECluster{}
+func (in *GCPKubernetesCluster) DeepCopyObject() runtime.Object {
+	out := GCPKubernetesCluster{}
 	in.DeepCopyInto(&out)
 
 	return &out
 }
 
-func (in *GKEClusterList) DeepCopyObject() runtime.Object {
-	out := GKEClusterList{}
+func (in *GCPKubernetesClusterList) DeepCopyObject() runtime.Object {
+	out := GCPKubernetesClusterList{}
 	out.TypeMeta = in.TypeMeta
 	out.ListMeta = in.ListMeta
 
 	if in.Items != nil {
-		out.Items = make([]GKECluster, len(in.Items))
+		out.Items = make([]GCPKubernetesCluster, len(in.Items))
 		for i := range in.Items {
 			in.Items[i].DeepCopyInto(&out.Items[i])
 		}
@@ -39,30 +39,30 @@ func (in *GKEClusterList) DeepCopyObject() runtime.Object {
 }
 
 // ---------------------------------------------------
-// GKEInstance
+// GCPInstance
 // ---------------------------------------------------
-func (in *GKEInstance) DeepCopyInto(out *GKEInstance) {
+func (in *GCPInstance) DeepCopyInto(out *GCPInstance) {
 	out.TypeMeta = in.TypeMeta
 	out.ObjectMeta = in.ObjectMeta
-	out.Spec = GKEInstanceSpec{
+	out.Spec = GCPInstanceSpec{
 		Name: in.Spec.Name,
 	}
 }
 
-func (in *GKEInstance) DeepCopyObject() runtime.Object {
-	out := GKEInstance{}
+func (in *GCPInstance) DeepCopyObject() runtime.Object {
+	out := GCPInstance{}
 	in.DeepCopyInto(&out)
 
 	return &out
 }
 
-func (in *GKEInstanceList) DeepCopyObject() runtime.Object {
-	out := GKEInstanceList{}
+func (in *GCPInstanceList) DeepCopyObject() runtime.Object {
+	out := GCPInstanceList{}
 	out.TypeMeta = in.TypeMeta
 	out.ListMeta = in.ListMeta
 
 	if in.Items != nil {
-		out.Items = make([]GKEInstance, len(in.Items))
+		out.Items = make([]GCPInstance, len(in.Items))
 		for i := range in.Items {
 			in.Items[i].DeepCopyInto(&out.Items[i])
 		}
@@ -72,31 +72,31 @@ func (in *GKEInstanceList) DeepCopyObject() runtime.Object {
 }
 
 // ---------------------------------------------------
-// GKENetwork
+// GCPNetwork
 // ---------------------------------------------------
-func (in *GKENetwork) DeepCopyInto(out *GKENetwork) {
+func (in *GCPNetwork) DeepCopyInto(out *GCPNetwork) {
 	out.TypeMeta = in.TypeMeta
 	out.ObjectMeta = in.ObjectMeta
-	out.Spec = GKENetworkSpec{
+	out.Spec = GCPNetworkSpec{
 		Name:                  in.Spec.Name,
 		AutoCreateSubnetworks: in.Spec.AutoCreateSubnetworks,
 	}
 }
 
-func (in *GKENetwork) DeepCopyObject() runtime.Object {
-	out := GKENetwork{}
+func (in *GCPNetwork) DeepCopyObject() runtime.Object {
+	out := GCPNetwork{}
 	in.DeepCopyInto(&out)
 
 	return &out
 }
 
-func (in *GKENetworkList) DeepCopyObject() runtime.Object {
-	out := GKENetworkList{}
+func (in *GCPNetworkList) DeepCopyObject() runtime.Object {
+	out := GCPNetworkList{}
 	out.TypeMeta = in.TypeMeta
 	out.ListMeta = in.ListMeta
 
 	if in.Items != nil {
-		out.Items = make([]GKENetwork, len(in.Items))
+		out.Items = make([]GCPNetwork, len(in.Items))
 		for i := range in.Items {
 			in.Items[i].DeepCopyInto(&out.Items[i])
 		}
