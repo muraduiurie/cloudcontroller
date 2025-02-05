@@ -1,0 +1,70 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.17.1
+  name: gcpkubernetesclusters.benzaiten.io
+spec:
+  group: benzaiten.io
+  names:
+    kind: GCPKubernetesCluster
+    listKind: GCPKubernetesClusterList
+    plural: gcpkubernetesclusters
+    shortNames:
+    - gkc
+    singular: gcpkubernetescluster
+  scope: Namespaced
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        description: GCPKubernetesCluster is the Schema for the gcpkubernetesclusters
+          API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: Spec defines the desired state of GCPKubernetesCluster
+            properties:
+              initialNodeCount:
+                description: InitialNodeCount is the number of nodes to create in
+                  the GCP Kubernetes cluster
+                format: int32
+                type: integer
+              name:
+                description: Name is the name of the GCP Kubernetes cluster
+                type: string
+            required:
+            - initialNodeCount
+            - name
+            type: object
+          status:
+            description: Status defines the observed state of GCPKubernetesCluster
+            properties:
+              phase:
+                description: Phase is the current state of the GCP Kubernetes cluster
+                type: string
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
