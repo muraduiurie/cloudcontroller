@@ -6,6 +6,7 @@ import (
 	cloudv1 "github.com/charmelionag/cloudcontroller/api/v1"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -14,7 +15,8 @@ import (
 
 type GCPNetworkReconciler struct {
 	client.Client
-	Scheme *runtime.Scheme
+	Scheme        *runtime.Scheme
+	eventRecorder record.EventRecorder
 }
 
 func (cr *GCPNetworkReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
@@ -45,9 +47,11 @@ func (cr *GCPNetworkReconciler) SetupWithManager(mgr ctrl.Manager) error {
 }
 
 func setupGCPNetworkController(mgr manager.Manager) error {
+	eventRecorder := mgr.GetEventRecorderFor("gcpnetwork")
 	cc := GCPNetworkReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
+		Client:        mgr.GetClient(),
+		Scheme:        mgr.GetScheme(),
+		eventRecorder: eventRecorder,
 	}
 
 	// create GCPNetwork controller

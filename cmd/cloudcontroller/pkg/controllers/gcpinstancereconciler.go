@@ -6,6 +6,7 @@ import (
 	cloudv1 "github.com/charmelionag/cloudcontroller/api/v1"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -14,7 +15,8 @@ import (
 
 type GCPInstanceReconciler struct {
 	client.Client
-	Scheme *runtime.Scheme
+	Scheme        *runtime.Scheme
+	eventRecorder record.EventRecorder
 }
 
 func (cr *GCPInstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
@@ -45,9 +47,11 @@ func (cr *GCPInstanceReconciler) SetupWithManager(mgr ctrl.Manager) error {
 }
 
 func setupGCPInstanceController(mgr manager.Manager) error {
+	eventRecorder := mgr.GetEventRecorderFor("gcpinstance")
 	cc := GCPInstanceReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
+		Client:        mgr.GetClient(),
+		Scheme:        mgr.GetScheme(),
+		eventRecorder: eventRecorder,
 	}
 
 	// create GCPInstance controller
