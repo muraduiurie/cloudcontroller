@@ -18,14 +18,14 @@ type GCPInstanceReconciler struct {
 }
 
 func (cr *GCPInstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	logger := log.FromContext(ctx).WithValues("webpage", req.NamespacedName)
+	logger := log.FromContext(ctx).WithValues("gcpinstance", req.NamespacedName)
 
 	gk := cloudv1.GCPInstance{}
 
 	err := cr.Get(ctx, req.NamespacedName, &gk)
 	if err != nil {
 		if kerr.IsNotFound(err) {
-			logger.Info("webpage not found")
+			logger.Info("gcpinstance not found")
 			return ctrl.Result{}, nil
 		}
 		return ctrl.Result{}, err

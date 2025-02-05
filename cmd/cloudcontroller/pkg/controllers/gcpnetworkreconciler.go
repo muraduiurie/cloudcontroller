@@ -18,14 +18,14 @@ type GCPNetworkReconciler struct {
 }
 
 func (cr *GCPNetworkReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	logger := log.FromContext(ctx).WithValues("webpage", req.NamespacedName)
+	logger := log.FromContext(ctx).WithValues("gcpnetwork", req.NamespacedName)
 
 	gk := cloudv1.GCPNetwork{}
 
 	err := cr.Get(ctx, req.NamespacedName, &gk)
 	if err != nil {
 		if kerr.IsNotFound(err) {
-			logger.Info("webpage not found")
+			logger.Info("gcpnetwork not found")
 			return ctrl.Result{}, nil
 		}
 		return ctrl.Result{}, err

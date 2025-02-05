@@ -18,14 +18,14 @@ type GCPKubernetesClusterReconciler struct {
 }
 
 func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	logger := log.FromContext(ctx).WithValues("webpage", req.NamespacedName)
+	logger := log.FromContext(ctx).WithValues("gcpkubernetescluster", req.NamespacedName)
 
 	gk := cloudv1.GCPKubernetesCluster{}
 
 	err := cr.Get(ctx, req.NamespacedName, &gk)
 	if err != nil {
 		if kerr.IsNotFound(err) {
-			logger.Info("webpage not found")
+			logger.Info("gcpkubernetescluster not found")
 			return ctrl.Result{}, nil
 		}
 		return ctrl.Result{}, err
