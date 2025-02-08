@@ -5,168 +5,88 @@
 package gcp
 
 import (
-	context "context"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	compute "google.golang.org/api/compute/v1"
-	container "google.golang.org/api/container/v1"
+	v1 "google.golang.org/api/compute/v1"
+	googleapi "google.golang.org/api/googleapi"
 )
 
-// MockServiceInterface is a mock of ServiceInterface interface.
-type MockServiceInterface struct {
+// MockInstancesInterface is a mock of InstancesInterface interface.
+type MockInstancesInterface struct {
 	ctrl     *gomock.Controller
-	recorder *MockServiceInterfaceMockRecorder
+	recorder *MockInstancesInterfaceMockRecorder
 }
 
-// MockServiceInterfaceMockRecorder is the mock recorder for MockServiceInterface.
-type MockServiceInterfaceMockRecorder struct {
-	mock *MockServiceInterface
+// MockInstancesInterfaceMockRecorder is the mock recorder for MockInstancesInterface.
+type MockInstancesInterfaceMockRecorder struct {
+	mock *MockInstancesInterface
 }
 
-// NewMockServiceInterface creates a new mock instance.
-func NewMockServiceInterface(ctrl *gomock.Controller) *MockServiceInterface {
-	mock := &MockServiceInterface{ctrl: ctrl}
-	mock.recorder = &MockServiceInterfaceMockRecorder{mock}
+// NewMockInstancesInterface creates a new mock instance.
+func NewMockInstancesInterface(ctrl *gomock.Controller) *MockInstancesInterface {
+	mock := &MockInstancesInterface{ctrl: ctrl}
+	mock.recorder = &MockInstancesInterfaceMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockServiceInterface) EXPECT() *MockServiceInterfaceMockRecorder {
+func (m *MockInstancesInterface) EXPECT() *MockInstancesInterfaceMockRecorder {
 	return m.recorder
 }
 
-// CreateCluster mocks base method.
-func (m *MockServiceInterface) CreateCluster(ctx context.Context, zone string, cluster *container.Cluster) (*container.Operation, error) {
+// List mocks base method.
+func (m *MockInstancesInterface) List(project, zone string) ListInstancesInterface {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateCluster", ctx, zone, cluster)
-	ret0, _ := ret[0].(*container.Operation)
+	ret := m.ctrl.Call(m, "List", project, zone)
+	ret0, _ := ret[0].(ListInstancesInterface)
+	return ret0
+}
+
+// List indicates an expected call of List.
+func (mr *MockInstancesInterfaceMockRecorder) List(project, zone interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockInstancesInterface)(nil).List), project, zone)
+}
+
+// MockListInstancesInterface is a mock of ListInstancesInterface interface.
+type MockListInstancesInterface struct {
+	ctrl     *gomock.Controller
+	recorder *MockListInstancesInterfaceMockRecorder
+}
+
+// MockListInstancesInterfaceMockRecorder is the mock recorder for MockListInstancesInterface.
+type MockListInstancesInterfaceMockRecorder struct {
+	mock *MockListInstancesInterface
+}
+
+// NewMockListInstancesInterface creates a new mock instance.
+func NewMockListInstancesInterface(ctrl *gomock.Controller) *MockListInstancesInterface {
+	mock := &MockListInstancesInterface{ctrl: ctrl}
+	mock.recorder = &MockListInstancesInterfaceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockListInstancesInterface) EXPECT() *MockListInstancesInterfaceMockRecorder {
+	return m.recorder
+}
+
+// Do mocks base method.
+func (m *MockListInstancesInterface) Do(opts ...googleapi.CallOption) (*v1.InstanceList, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "Do", varargs...)
+	ret0, _ := ret[0].(*v1.InstanceList)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// CreateCluster indicates an expected call of CreateCluster.
-func (mr *MockServiceInterfaceMockRecorder) CreateCluster(ctx, zone, cluster interface{}) *gomock.Call {
+// Do indicates an expected call of Do.
+func (mr *MockListInstancesInterfaceMockRecorder) Do(opts ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateCluster", reflect.TypeOf((*MockServiceInterface)(nil).CreateCluster), ctx, zone, cluster)
-}
-
-// CreateNetwork mocks base method.
-func (m *MockServiceInterface) CreateNetwork(ctx context.Context, network *compute.Network) (*compute.Operation, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateNetwork", ctx, network)
-	ret0, _ := ret[0].(*compute.Operation)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CreateNetwork indicates an expected call of CreateNetwork.
-func (mr *MockServiceInterfaceMockRecorder) CreateNetwork(ctx, network interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateNetwork", reflect.TypeOf((*MockServiceInterface)(nil).CreateNetwork), ctx, network)
-}
-
-// DeleteCluster mocks base method.
-func (m *MockServiceInterface) DeleteCluster(ctx context.Context, zone, clusterName string) (*container.Operation, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteCluster", ctx, zone, clusterName)
-	ret0, _ := ret[0].(*container.Operation)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// DeleteCluster indicates an expected call of DeleteCluster.
-func (mr *MockServiceInterfaceMockRecorder) DeleteCluster(ctx, zone, clusterName interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteCluster", reflect.TypeOf((*MockServiceInterface)(nil).DeleteCluster), ctx, zone, clusterName)
-}
-
-// DeleteNetwork mocks base method.
-func (m *MockServiceInterface) DeleteNetwork(ctx context.Context, nid string) (*compute.Operation, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteNetwork", ctx, nid)
-	ret0, _ := ret[0].(*compute.Operation)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// DeleteNetwork indicates an expected call of DeleteNetwork.
-func (mr *MockServiceInterfaceMockRecorder) DeleteNetwork(ctx, nid interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteNetwork", reflect.TypeOf((*MockServiceInterface)(nil).DeleteNetwork), ctx, nid)
-}
-
-// GetCluster mocks base method.
-func (m *MockServiceInterface) GetCluster(ctx context.Context, zone, clusterName string) (*container.Cluster, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCluster", ctx, zone, clusterName)
-	ret0, _ := ret[0].(*container.Cluster)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetCluster indicates an expected call of GetCluster.
-func (mr *MockServiceInterfaceMockRecorder) GetCluster(ctx, zone, clusterName interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCluster", reflect.TypeOf((*MockServiceInterface)(nil).GetCluster), ctx, zone, clusterName)
-}
-
-// GetNetwork mocks base method.
-func (m *MockServiceInterface) GetNetwork(ctx context.Context, nid string) (*compute.Network, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNetwork", ctx, nid)
-	ret0, _ := ret[0].(*compute.Network)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetNetwork indicates an expected call of GetNetwork.
-func (mr *MockServiceInterfaceMockRecorder) GetNetwork(ctx, nid interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNetwork", reflect.TypeOf((*MockServiceInterface)(nil).GetNetwork), ctx, nid)
-}
-
-// ListClusters mocks base method.
-func (m *MockServiceInterface) ListClusters(ctx context.Context, zone string) (*container.ListClustersResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListClusters", ctx, zone)
-	ret0, _ := ret[0].(*container.ListClustersResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListClusters indicates an expected call of ListClusters.
-func (mr *MockServiceInterfaceMockRecorder) ListClusters(ctx, zone interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListClusters", reflect.TypeOf((*MockServiceInterface)(nil).ListClusters), ctx, zone)
-}
-
-// ListInstances mocks base method.
-func (m *MockServiceInterface) ListInstances(ctx context.Context, zone string) (*compute.InstanceList, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListInstances", ctx, zone)
-	ret0, _ := ret[0].(*compute.InstanceList)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListInstances indicates an expected call of ListInstances.
-func (mr *MockServiceInterfaceMockRecorder) ListInstances(ctx, zone interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListInstances", reflect.TypeOf((*MockServiceInterface)(nil).ListInstances), ctx, zone)
-}
-
-// ListNetworks mocks base method.
-func (m *MockServiceInterface) ListNetworks(ctx context.Context) (*compute.NetworkList, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListNetworks", ctx)
-	ret0, _ := ret[0].(*compute.NetworkList)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListNetworks indicates an expected call of ListNetworks.
-func (mr *MockServiceInterfaceMockRecorder) ListNetworks(ctx interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListNetworks", reflect.TypeOf((*MockServiceInterface)(nil).ListNetworks), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Do", reflect.TypeOf((*MockListInstancesInterface)(nil).Do), opts...)
 }
