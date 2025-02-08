@@ -80,17 +80,28 @@ autoscaling:
   # targetMemoryUtilizationPercentage: 80
 
 # Additional volumes on the output Deployment definition.
-volumes: []
-# - name: foo
-#   secret:
-#     secretName: mysecret
-#     optional: false
+volumes:
+  - name: "gcp-creds"
+    secret:
+      secretName: "gcp-creds"
+      optional: false
+  - name: "controller-configs"
+    configMap:
+      name: "controller-configs"
+      optional: false
+      items:
+        - key: "controller-configs.yaml"
+          path: "controller-configs.yaml"
+
 
 # Additional volumeMounts on the output Deployment definition.
-volumeMounts: []
-# - name: foo
-#   mountPath: "/etc/foo"
-#   readOnly: true
+volumeMounts:
+  - name: "gcp-creds"
+    mountPath: "/var/run/secrets/controller"
+    readOnly: true
+  - name: "controller-configs"
+    mountPath: "/app"
+    readOnly: true
 
 nodeSelector: {}
 
@@ -102,6 +113,15 @@ rbac:
   role:
     name: my-role
     rules:
+      - apiGroups: [""]
+        resources: ["events"]
+        verbs: ["create"]
       - apiGroups: ["benzaiten.io"]
         resources: ["gcpkubernetesclusters", "gcpnetworks", "gcpinstances"]
         verbs: ["*"]
+
+configMap:
+  CONFIG_PATH: /app/controller-configs.yaml
+  controller-configs.yaml: |
+    controller:
+      gcpSaFilePath: "/var/run/secrets/controller/gcp-creds.json"

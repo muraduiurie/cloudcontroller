@@ -255,3 +255,32 @@ func TestContainer_DeleteCluster(t *testing.T) {
 		t.Fatalf("expected operation named fake-operation-1, got %v", resp)
 	}
 }
+
+func TestContainer_GetCluster(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Create the mock.
+	mockClient := NewMockServiceInterface(ctrl)
+
+	// Define a fake response.
+	fakeCluster := &container.Cluster{
+		Name: "fake-cluster-1",
+	}
+
+	// Set up the mock to expect a call and return fakeCluster.
+	mockClient.
+		EXPECT().
+		GetCluster(gomock.Any(), zone, "fake-cluster-id").
+		Return(fakeCluster, nil)
+
+	// Call the mock
+	resp, err := mockClient.GetCluster(context.Background(), zone, "fake-cluster-id")
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	if resp.Name != "fake-cluster-1" {
+		t.Fatalf("expected cluster named fake-cluster-1, got %v", resp)
+	}
+}

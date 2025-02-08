@@ -17,6 +17,7 @@ type GCPNetworkReconciler struct {
 	client.Client
 	Scheme        *runtime.Scheme
 	eventRecorder record.EventRecorder
+	cloud         CloudProviders
 }
 
 func (cr *GCPNetworkReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
@@ -36,6 +37,7 @@ func (cr *GCPNetworkReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	// TODO: Add reconciliation logic here
 
 	logger.Info("gcp network reconciled")
+	cr.eventRecorder.Event(&gk, "Normal", "Reconciled", "GCP Network reconciled")
 
 	return ctrl.Result{}, nil
 }
@@ -46,12 +48,13 @@ func (cr *GCPNetworkReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Complete(cr)
 }
 
-func setupGCPNetworkController(mgr manager.Manager) error {
+func setupGCPNetworkController(mgr manager.Manager, cp CloudProviders) error {
 	eventRecorder := mgr.GetEventRecorderFor("gcpnetwork")
 	cc := GCPNetworkReconciler{
 		Client:        mgr.GetClient(),
 		Scheme:        mgr.GetScheme(),
 		eventRecorder: eventRecorder,
+		cloud:         cp,
 	}
 
 	// create GCPNetwork controller

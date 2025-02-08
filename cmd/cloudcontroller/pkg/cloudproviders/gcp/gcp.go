@@ -31,6 +31,7 @@ type ServiceInterface interface {
 	CreateNetwork(ctx context.Context, network *compute.Network) (*compute.Operation, error)
 	DeleteNetwork(ctx context.Context, nid string) (*compute.Operation, error)
 	ListClusters(ctx context.Context, zone string) (*container.ListClustersResponse, error)
+	GetCluster(ctx context.Context, zone, clusterName string) (*container.Cluster, error)
 	CreateCluster(ctx context.Context, zone string, cluster *container.Cluster) (*container.Operation, error)
 	DeleteCluster(ctx context.Context, zone, clusterName string) (*container.Operation, error)
 }
@@ -136,6 +137,14 @@ func (a *API) DeleteNetwork(ctx context.Context, nid string) (*compute.Operation
 
 func (a *API) ListClusters(ctx context.Context, zone string) (*container.ListClustersResponse, error) {
 	resp, err := a.Container.Client.Projects.Zones.Clusters.List(a.ProjectId, zone).Context(ctx).Do()
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (a *API) GetCluster(ctx context.Context, zone, clusterName string) (*container.Cluster, error) {
+	resp, err := a.Container.Client.Projects.Zones.Clusters.Get(a.ProjectId, zone, clusterName).Context(ctx).Do()
 	if err != nil {
 		return nil, err
 	}

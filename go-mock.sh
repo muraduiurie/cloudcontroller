@@ -1,1 +1,0 @@
-mockgen -source=cloudproviders/gcp/gcp.go -destination=cloudproviders/gcp/mock.go -package=gcp

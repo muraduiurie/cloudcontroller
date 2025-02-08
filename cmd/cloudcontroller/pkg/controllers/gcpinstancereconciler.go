@@ -17,6 +17,7 @@ type GCPInstanceReconciler struct {
 	client.Client
 	Scheme        *runtime.Scheme
 	eventRecorder record.EventRecorder
+	cloud         CloudProviders
 }
 
 func (cr *GCPInstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
@@ -36,6 +37,7 @@ func (cr *GCPInstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request
 	// TODO: Add reconciliation logic here
 
 	logger.Info("gcp instance reconciled")
+	cr.eventRecorder.Event(&gk, "Normal", "Reconciled", "GCP Instance reconciled")
 
 	return ctrl.Result{}, nil
 }
@@ -46,12 +48,13 @@ func (cr *GCPInstanceReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Complete(cr)
 }
 
-func setupGCPInstanceController(mgr manager.Manager) error {
+func setupGCPInstanceController(mgr manager.Manager, cp CloudProviders) error {
 	eventRecorder := mgr.GetEventRecorderFor("gcpinstance")
 	cc := GCPInstanceReconciler{
 		Client:        mgr.GetClient(),
 		Scheme:        mgr.GetScheme(),
 		eventRecorder: eventRecorder,
+		cloud:         cp,
 	}
 
 	// create GCPInstance controller

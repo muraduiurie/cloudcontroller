@@ -17,6 +17,7 @@ type GCPKubernetesClusterReconciler struct {
 	client.Client
 	Scheme        *runtime.Scheme
 	eventRecorder record.EventRecorder
+	cloud         CloudProviders
 }
 
 func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
@@ -33,9 +34,16 @@ func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctr
 		return ctrl.Result{}, err
 	}
 
-	// TODO: Add reconciliation logic here
+	//// Check if GCP kubernetes cluster exists
+	//gke, err := cr.cloud.GCP.GetCluster(ctx, gk.Spec.Zone, gk.Spec.Name)
+	//if err != nil {
+	//	logger.Error(err, "error getting GCP Kubernetes Cluster: %v", err)
+	//	fmt.Printf("%+v\n", gke)
+	//	return ctrl.Result{}, err
+	//}
 
 	logger.Info("gcp kubernetes cluster reconciled")
+	cr.eventRecorder.Event(&gk, "Normal", "Reconciled", "GCP Kubernetes Cluster reconciled")
 
 	return ctrl.Result{}, nil
 }
@@ -46,12 +54,13 @@ func (cr *GCPKubernetesClusterReconciler) SetupWithManager(mgr ctrl.Manager) err
 		Complete(cr)
 }
 
-func setupGCPKubernetesClusterController(mgr manager.Manager) error {
+func setupGCPKubernetesClusterController(mgr manager.Manager, cp CloudProviders) error {
 	eventRecorder := mgr.GetEventRecorderFor("gcpkubernetescluster")
 	cc := GCPKubernetesClusterReconciler{
 		Client:        mgr.GetClient(),
 		Scheme:        mgr.GetScheme(),
 		eventRecorder: eventRecorder,
+		cloud:         cp,
 	}
 
 	// create GCPKubernetesCluster controller
