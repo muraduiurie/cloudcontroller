@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	benzaiten "github.com/charmelionag/cloudcontroller/api/v1"
-	"github.com/charmelionag/cloudcontroller/pkg/cloudproviders/gcp"
-	"github.com/golang/mock/gomock"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/rest"
@@ -73,26 +71,6 @@ func TestMain(m *testing.M) {
 	}
 
 	os.Exit(code)
-}
-
-func FakeCloudClients() CloudProviders {
-	gomockCtrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	// Create the mock.
-	mockClient := gcp.NewMockServiceInterface(gomockCtrl)
-
-	return CloudProviders{
-		GCP: &gcp.API{
-			Compute: &gcp.Compute{
-				Client: mockClient,
-			},
-		},
-	}
-
-Compute:
-	&Compute{Client: computeService}
-
 }
 
 func newFakeGKCReconciler() (*GCPKubernetesClusterReconciler, error) {
