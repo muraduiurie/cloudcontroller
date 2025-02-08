@@ -9,6 +9,7 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	v1 "google.golang.org/api/compute/v1"
+	v10 "google.golang.org/api/container/v1"
 	googleapi "google.golang.org/api/googleapi"
 )
 
@@ -47,6 +48,43 @@ func (m *MockInstancesInterface) List(project, zone string) ListInstancesInterfa
 func (mr *MockInstancesInterfaceMockRecorder) List(project, zone interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockInstancesInterface)(nil).List), project, zone)
+}
+
+// MockClustersInterface is a mock of ClustersInterface interface.
+type MockClustersInterface struct {
+	ctrl     *gomock.Controller
+	recorder *MockClustersInterfaceMockRecorder
+}
+
+// MockClustersInterfaceMockRecorder is the mock recorder for MockClustersInterface.
+type MockClustersInterfaceMockRecorder struct {
+	mock *MockClustersInterface
+}
+
+// NewMockClustersInterface creates a new mock instance.
+func NewMockClustersInterface(ctrl *gomock.Controller) *MockClustersInterface {
+	mock := &MockClustersInterface{ctrl: ctrl}
+	mock.recorder = &MockClustersInterfaceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockClustersInterface) EXPECT() *MockClustersInterfaceMockRecorder {
+	return m.recorder
+}
+
+// List mocks base method.
+func (m *MockClustersInterface) List(project, zone string) ListClustersInterface {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "List", project, zone)
+	ret0, _ := ret[0].(ListClustersInterface)
+	return ret0
+}
+
+// List indicates an expected call of List.
+func (mr *MockClustersInterfaceMockRecorder) List(project, zone interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockClustersInterface)(nil).List), project, zone)
 }
 
 // MockListInstancesInterface is a mock of ListInstancesInterface interface.
@@ -89,4 +127,46 @@ func (m *MockListInstancesInterface) Do(opts ...googleapi.CallOption) (*v1.Insta
 func (mr *MockListInstancesInterfaceMockRecorder) Do(opts ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Do", reflect.TypeOf((*MockListInstancesInterface)(nil).Do), opts...)
+}
+
+// MockListClustersInterface is a mock of ListClustersInterface interface.
+type MockListClustersInterface struct {
+	ctrl     *gomock.Controller
+	recorder *MockListClustersInterfaceMockRecorder
+}
+
+// MockListClustersInterfaceMockRecorder is the mock recorder for MockListClustersInterface.
+type MockListClustersInterfaceMockRecorder struct {
+	mock *MockListClustersInterface
+}
+
+// NewMockListClustersInterface creates a new mock instance.
+func NewMockListClustersInterface(ctrl *gomock.Controller) *MockListClustersInterface {
+	mock := &MockListClustersInterface{ctrl: ctrl}
+	mock.recorder = &MockListClustersInterfaceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockListClustersInterface) EXPECT() *MockListClustersInterfaceMockRecorder {
+	return m.recorder
+}
+
+// Do mocks base method.
+func (m *MockListClustersInterface) Do(opts ...googleapi.CallOption) (*v10.ListClustersResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "Do", varargs...)
+	ret0, _ := ret[0].(*v10.ListClustersResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Do indicates an expected call of Do.
+func (mr *MockListClustersInterfaceMockRecorder) Do(opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Do", reflect.TypeOf((*MockListClustersInterface)(nil).Do), opts...)
 }
