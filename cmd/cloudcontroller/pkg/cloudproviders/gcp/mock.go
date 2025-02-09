@@ -73,6 +73,20 @@ func (m *MockNetworksInterface) EXPECT() *MockNetworksInterfaceMockRecorder {
 	return m.recorder
 }
 
+// Delete mocks base method.
+func (m *MockNetworksInterface) Delete(project, network string) DeleteNetworksInterface {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Delete", project, network)
+	ret0, _ := ret[0].(DeleteNetworksInterface)
+	return ret0
+}
+
+// Delete indicates an expected call of Delete.
+func (mr *MockNetworksInterfaceMockRecorder) Delete(project, network interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockNetworksInterface)(nil).Delete), project, network)
+}
+
 // Get mocks base method.
 func (m *MockNetworksInterface) Get(project, network string) GetNetworksInterface {
 	m.ctrl.T.Helper()
@@ -85,6 +99,20 @@ func (m *MockNetworksInterface) Get(project, network string) GetNetworksInterfac
 func (mr *MockNetworksInterfaceMockRecorder) Get(project, network interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockNetworksInterface)(nil).Get), project, network)
+}
+
+// Insert mocks base method.
+func (m *MockNetworksInterface) Insert(project string, network *v1.Network) CreateNetworksInterface {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Insert", project, network)
+	ret0, _ := ret[0].(CreateNetworksInterface)
+	return ret0
+}
+
+// Insert indicates an expected call of Insert.
+func (mr *MockNetworksInterfaceMockRecorder) Insert(project, network interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockNetworksInterface)(nil).Insert), project, network)
 }
 
 // List mocks base method.
@@ -262,6 +290,90 @@ func (m *MockGetNetworksInterface) Do(opts ...googleapi.CallOption) (*v1.Network
 func (mr *MockGetNetworksInterfaceMockRecorder) Do(opts ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Do", reflect.TypeOf((*MockGetNetworksInterface)(nil).Do), opts...)
+}
+
+// MockCreateNetworksInterface is a mock of CreateNetworksInterface interface.
+type MockCreateNetworksInterface struct {
+	ctrl     *gomock.Controller
+	recorder *MockCreateNetworksInterfaceMockRecorder
+}
+
+// MockCreateNetworksInterfaceMockRecorder is the mock recorder for MockCreateNetworksInterface.
+type MockCreateNetworksInterfaceMockRecorder struct {
+	mock *MockCreateNetworksInterface
+}
+
+// NewMockCreateNetworksInterface creates a new mock instance.
+func NewMockCreateNetworksInterface(ctrl *gomock.Controller) *MockCreateNetworksInterface {
+	mock := &MockCreateNetworksInterface{ctrl: ctrl}
+	mock.recorder = &MockCreateNetworksInterfaceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockCreateNetworksInterface) EXPECT() *MockCreateNetworksInterfaceMockRecorder {
+	return m.recorder
+}
+
+// Do mocks base method.
+func (m *MockCreateNetworksInterface) Do(opts ...googleapi.CallOption) (*v1.Operation, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "Do", varargs...)
+	ret0, _ := ret[0].(*v1.Operation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Do indicates an expected call of Do.
+func (mr *MockCreateNetworksInterfaceMockRecorder) Do(opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Do", reflect.TypeOf((*MockCreateNetworksInterface)(nil).Do), opts...)
+}
+
+// MockDeleteNetworksInterface is a mock of DeleteNetworksInterface interface.
+type MockDeleteNetworksInterface struct {
+	ctrl     *gomock.Controller
+	recorder *MockDeleteNetworksInterfaceMockRecorder
+}
+
+// MockDeleteNetworksInterfaceMockRecorder is the mock recorder for MockDeleteNetworksInterface.
+type MockDeleteNetworksInterfaceMockRecorder struct {
+	mock *MockDeleteNetworksInterface
+}
+
+// NewMockDeleteNetworksInterface creates a new mock instance.
+func NewMockDeleteNetworksInterface(ctrl *gomock.Controller) *MockDeleteNetworksInterface {
+	mock := &MockDeleteNetworksInterface{ctrl: ctrl}
+	mock.recorder = &MockDeleteNetworksInterfaceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockDeleteNetworksInterface) EXPECT() *MockDeleteNetworksInterfaceMockRecorder {
+	return m.recorder
+}
+
+// Do mocks base method.
+func (m *MockDeleteNetworksInterface) Do(opts ...googleapi.CallOption) (*v1.Operation, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "Do", varargs...)
+	ret0, _ := ret[0].(*v1.Operation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Do indicates an expected call of Do.
+func (mr *MockDeleteNetworksInterfaceMockRecorder) Do(opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Do", reflect.TypeOf((*MockDeleteNetworksInterface)(nil).Do), opts...)
 }
 
 // MockListClustersInterface is a mock of ListClustersInterface interface.

@@ -218,3 +218,102 @@ func TestGetNetwork(t *testing.T) {
 		t.Errorf("Expected network %v, got %v", expectedNetwork, network)
 	}
 }
+
+func TestCreateNetwork(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Create mocks
+	mockNetworksInterface := NewMockNetworksInterface(ctrl)
+	mockCreateNetworksInterface := NewMockCreateNetworksInterface(ctrl)
+
+	// Set up expectations
+	expectedOperation := &compute.Operation{
+		Name: "test-operation",
+	}
+
+	// Expect the Insert method to be called with the correct parameters and return the mock CreateNetworksInterface
+	mockNetworksInterface.EXPECT().
+		Insert(projectID, gomock.Any()).
+		Return(mockCreateNetworksInterface)
+
+	// Expect the Do method to be called and return the expected operation
+	mockCreateNetworksInterface.EXPECT().
+		Do().
+		Return(expectedOperation, nil)
+
+	// Create the API network with the mock
+	api := &API{
+		Compute: ComputeService{
+			Clients: ComputeClients{
+				Networks: mockNetworksInterface,
+			},
+		},
+		Config: Config{
+			ProjectId: projectID,
+		},
+	}
+
+	// Call the function under test
+	operation, err := api.CreateNetwork(&compute.Network{
+		Name:                  "test-network",
+		AutoCreateSubnetworks: true,
+	})
+
+	// Verify the results
+	if err != nil {
+		t.Fatalf("CreateNetwork returned an error: %v", err)
+	}
+
+	if operation != expectedOperation {
+		t.Errorf("Expected operation %v, got %v", expectedOperation, operation)
+	}
+}
+
+func TestDeleteNetwork(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Create mocks
+	mockNetworksInterface := NewMockNetworksInterface(ctrl)
+	mockDeleteNetworksInterface := NewMockDeleteNetworksInterface(ctrl)
+
+	// Set up expectations
+	expectedOperation := &compute.Operation{
+		Name: "test-operation",
+	}
+
+	// Expect the Delete method to be called with the correct parameters and return the mock DeleteNetworksInterface
+	mockNetworksInterface.EXPECT().
+		Delete(projectID, networkID).
+		Return(mockDeleteNetworksInterface)
+
+	// Expect the Do method to be called and return the expected operation
+	mockDeleteNetworksInterface.EXPECT().
+		Do().
+		Return(expectedOperation, nil)
+
+	// Create the API network with the mock
+	api := &API{
+		Compute: ComputeService{
+			Clients: ComputeClients{
+				Networks: mockNetworksInterface,
+			},
+		},
+		Config: Config{
+			ProjectId: projectID,
+		},
+	}
+
+	// Call the function under test
+	operation, err := api.DeleteNetwork(networkID)
+
+	// Verify the results
+	if err != nil {
+		t.Fatalf("DeleteNetwork returned an error: %v", err)
+	}
+
+	if operation != expectedOperation {
+		t.Errorf("Expected operation %v, got %v", expectedOperation, operation)
+	}
+}

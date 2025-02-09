@@ -89,21 +89,22 @@ func (a *API) GetNetwork(nid string) (*compute.Network, error) {
 	return resp, nil
 }
 
-//	func (a *API) CreateNetwork(ctx context.Context, network *compute.Network) (*compute.Operation, error) {
-//		resp, err := a.Compute.Client.Networks.Insert(a.ProjectId, network).Context(ctx).Do()
-//		if err != nil {
-//			return nil, err
-//		}
-//		return resp, nil
-//	}
-//
-//	func (a *API) DeleteNetwork(ctx context.Context, nid string) (*compute.Operation, error) {
-//		resp, err := a.Compute.Client.Networks.Delete(a.ProjectId, nid).Context(ctx).Do()
-//		if err != nil {
-//			return nil, err
-//		}
-//		return resp, nil
-//	}
+func (a *API) CreateNetwork(network *compute.Network) (*compute.Operation, error) {
+	resp, err := a.Compute.Clients.Networks.Insert(a.ProjectId, network).Do()
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (a *API) DeleteNetwork(nid string) (*compute.Operation, error) {
+	resp, err := a.Compute.Clients.Networks.Delete(a.ProjectId, nid).Do()
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (a *API) ListClusters(zone string) (*container.ListClustersResponse, error) {
 	resp, err := a.Container.Clients.Clusters.List(a.ProjectId, zone).Do()
 	if err != nil {

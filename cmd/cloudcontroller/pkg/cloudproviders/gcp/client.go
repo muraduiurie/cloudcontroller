@@ -58,6 +58,8 @@ type (
 	NetworksInterface interface {
 		List(project string) ListNetworksInterface
 		Get(project, network string) GetNetworksInterface
+		Insert(project string, network *compute.Network) CreateNetworksInterface
+		Delete(project, network string) DeleteNetworksInterface
 	}
 
 	// container interfaces
@@ -81,6 +83,12 @@ type (
 	GetNetworksInterface interface {
 		Do(opts ...googleapi.CallOption) (*compute.Network, error)
 	}
+	CreateNetworksInterface interface {
+		Do(opts ...googleapi.CallOption) (*compute.Operation, error)
+	}
+	DeleteNetworksInterface interface {
+		Do(opts ...googleapi.CallOption) (*compute.Operation, error)
+	}
 
 	// container interfaces
 	//// kubernetes clusters
@@ -102,6 +110,12 @@ type (
 	}
 	GetNetworksRequest struct {
 		googleCall *compute.NetworksGetCall
+	}
+	CreateNetworksRequest struct {
+		googleCall *compute.NetworksInsertCall
+	}
+	DeleteNetworksRequest struct {
+		googleCall *compute.NetworksDeleteCall
 	}
 
 	// container google calls
@@ -134,6 +148,16 @@ func (n *GCPNetworks) Get(projectID, network string) GetNetworksInterface {
 		googleCall: n.NetworksService.Get(projectID, network),
 	}
 }
+func (n *GCPNetworks) Insert(projectID string, network *compute.Network) CreateNetworksInterface {
+	return &CreateNetworksRequest{
+		googleCall: n.NetworksService.Insert(projectID, network),
+	}
+}
+func (n *GCPNetworks) Delete(projectID, network string) DeleteNetworksInterface {
+	return &DeleteNetworksRequest{
+		googleCall: n.NetworksService.Delete(projectID, network),
+	}
+}
 
 // // Container
 // ///// Clusters
@@ -155,6 +179,12 @@ func (lc *ListNetworksRequest) Do(opts ...googleapi.CallOption) (*compute.Networ
 	return lc.googleCall.Do(opts...)
 }
 func (lc *GetNetworksRequest) Do(opts ...googleapi.CallOption) (*compute.Network, error) {
+	return lc.googleCall.Do(opts...)
+}
+func (lc *CreateNetworksRequest) Do(opts ...googleapi.CallOption) (*compute.Operation, error) {
+	return lc.googleCall.Do(opts...)
+}
+func (lc *DeleteNetworksRequest) Do(opts ...googleapi.CallOption) (*compute.Operation, error) {
 	return lc.googleCall.Do(opts...)
 }
 
