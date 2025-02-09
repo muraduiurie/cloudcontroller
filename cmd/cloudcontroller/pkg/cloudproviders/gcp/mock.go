@@ -152,6 +152,48 @@ func (m *MockClustersInterface) EXPECT() *MockClustersInterfaceMockRecorder {
 	return m.recorder
 }
 
+// Create mocks base method.
+func (m *MockClustersInterface) Create(project, zone string, cluster *v10.CreateClusterRequest) CreateClustersInterface {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Create", project, zone, cluster)
+	ret0, _ := ret[0].(CreateClustersInterface)
+	return ret0
+}
+
+// Create indicates an expected call of Create.
+func (mr *MockClustersInterfaceMockRecorder) Create(project, zone, cluster interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockClustersInterface)(nil).Create), project, zone, cluster)
+}
+
+// Delete mocks base method.
+func (m *MockClustersInterface) Delete(project, zone, cluster string) DeleteClustersInterface {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Delete", project, zone, cluster)
+	ret0, _ := ret[0].(DeleteClustersInterface)
+	return ret0
+}
+
+// Delete indicates an expected call of Delete.
+func (mr *MockClustersInterfaceMockRecorder) Delete(project, zone, cluster interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockClustersInterface)(nil).Delete), project, zone, cluster)
+}
+
+// Get mocks base method.
+func (m *MockClustersInterface) Get(project, zone, cluster string) GetClustersInterface {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", project, zone, cluster)
+	ret0, _ := ret[0].(GetClustersInterface)
+	return ret0
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockClustersInterfaceMockRecorder) Get(project, zone, cluster interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockClustersInterface)(nil).Get), project, zone, cluster)
+}
+
 // List mocks base method.
 func (m *MockClustersInterface) List(project, zone string) ListClustersInterface {
 	m.ctrl.T.Helper()
@@ -416,4 +458,130 @@ func (m *MockListClustersInterface) Do(opts ...googleapi.CallOption) (*v10.ListC
 func (mr *MockListClustersInterfaceMockRecorder) Do(opts ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Do", reflect.TypeOf((*MockListClustersInterface)(nil).Do), opts...)
+}
+
+// MockGetClustersInterface is a mock of GetClustersInterface interface.
+type MockGetClustersInterface struct {
+	ctrl     *gomock.Controller
+	recorder *MockGetClustersInterfaceMockRecorder
+}
+
+// MockGetClustersInterfaceMockRecorder is the mock recorder for MockGetClustersInterface.
+type MockGetClustersInterfaceMockRecorder struct {
+	mock *MockGetClustersInterface
+}
+
+// NewMockGetClustersInterface creates a new mock instance.
+func NewMockGetClustersInterface(ctrl *gomock.Controller) *MockGetClustersInterface {
+	mock := &MockGetClustersInterface{ctrl: ctrl}
+	mock.recorder = &MockGetClustersInterfaceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockGetClustersInterface) EXPECT() *MockGetClustersInterfaceMockRecorder {
+	return m.recorder
+}
+
+// Do mocks base method.
+func (m *MockGetClustersInterface) Do(opts ...googleapi.CallOption) (*v10.Cluster, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "Do", varargs...)
+	ret0, _ := ret[0].(*v10.Cluster)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Do indicates an expected call of Do.
+func (mr *MockGetClustersInterfaceMockRecorder) Do(opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Do", reflect.TypeOf((*MockGetClustersInterface)(nil).Do), opts...)
+}
+
+// MockCreateClustersInterface is a mock of CreateClustersInterface interface.
+type MockCreateClustersInterface struct {
+	ctrl     *gomock.Controller
+	recorder *MockCreateClustersInterfaceMockRecorder
+}
+
+// MockCreateClustersInterfaceMockRecorder is the mock recorder for MockCreateClustersInterface.
+type MockCreateClustersInterfaceMockRecorder struct {
+	mock *MockCreateClustersInterface
+}
+
+// NewMockCreateClustersInterface creates a new mock instance.
+func NewMockCreateClustersInterface(ctrl *gomock.Controller) *MockCreateClustersInterface {
+	mock := &MockCreateClustersInterface{ctrl: ctrl}
+	mock.recorder = &MockCreateClustersInterfaceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockCreateClustersInterface) EXPECT() *MockCreateClustersInterfaceMockRecorder {
+	return m.recorder
+}
+
+// Do mocks base method.
+func (m *MockCreateClustersInterface) Do(opts ...googleapi.CallOption) (*v10.Operation, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "Do", varargs...)
+	ret0, _ := ret[0].(*v10.Operation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Do indicates an expected call of Do.
+func (mr *MockCreateClustersInterfaceMockRecorder) Do(opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Do", reflect.TypeOf((*MockCreateClustersInterface)(nil).Do), opts...)
+}
+
+// MockDeleteClustersInterface is a mock of DeleteClustersInterface interface.
+type MockDeleteClustersInterface struct {
+	ctrl     *gomock.Controller
+	recorder *MockDeleteClustersInterfaceMockRecorder
+}
+
+// MockDeleteClustersInterfaceMockRecorder is the mock recorder for MockDeleteClustersInterface.
+type MockDeleteClustersInterfaceMockRecorder struct {
+	mock *MockDeleteClustersInterface
+}
+
+// NewMockDeleteClustersInterface creates a new mock instance.
+func NewMockDeleteClustersInterface(ctrl *gomock.Controller) *MockDeleteClustersInterface {
+	mock := &MockDeleteClustersInterface{ctrl: ctrl}
+	mock.recorder = &MockDeleteClustersInterfaceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockDeleteClustersInterface) EXPECT() *MockDeleteClustersInterfaceMockRecorder {
+	return m.recorder
+}
+
+// Do mocks base method.
+func (m *MockDeleteClustersInterface) Do(opts ...googleapi.CallOption) (*v10.Operation, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "Do", varargs...)
+	ret0, _ := ret[0].(*v10.Operation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Do indicates an expected call of Do.
+func (mr *MockDeleteClustersInterfaceMockRecorder) Do(opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Do", reflect.TypeOf((*MockDeleteClustersInterface)(nil).Do), opts...)
 }

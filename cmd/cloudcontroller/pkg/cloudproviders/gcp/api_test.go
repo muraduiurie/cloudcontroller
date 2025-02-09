@@ -317,3 +317,151 @@ func TestDeleteNetwork(t *testing.T) {
 		t.Errorf("Expected operation %v, got %v", expectedOperation, operation)
 	}
 }
+
+func TestCreateCluster(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Create mocks
+	mockClustersInterface := NewMockClustersInterface(ctrl)
+	mockCreateClustersInterface := NewMockCreateClustersInterface(ctrl)
+
+	// Set up expectations
+	expectedOperation := &container.Operation{
+		Name: "test-operation",
+	}
+
+	// Expect the Create method to be called with the correct parameters and return the mock CreateClustersInterface
+	mockClustersInterface.EXPECT().
+		Create(projectID, zone, gomock.Any()).
+		Return(mockCreateClustersInterface)
+
+	// Expect the Do method to be called and return the expected operation
+	mockCreateClustersInterface.EXPECT().
+		Do().
+		Return(expectedOperation, nil)
+
+	// Create the API cluster with the mock
+	api := &API{
+		Container: ContainerService{
+			Clients: ContainerClients{
+				Clusters: mockClustersInterface,
+			},
+		},
+		Config: Config{
+			ProjectId: projectID,
+		},
+	}
+
+	// Call the function under test
+	operation, err := api.CreateCluster(zone, &container.Cluster{
+		Name:             "test-cluster",
+		InitialNodeCount: 1,
+	})
+
+	// Verify the results
+	if err != nil {
+		t.Fatalf("CreateCluster returned an error: %v", err)
+	}
+
+	if operation != expectedOperation {
+		t.Errorf("Expected operation %v, got %v", expectedOperation, operation)
+	}
+}
+
+func TestDeleteCluster(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Create mocks
+	mockClustersInterface := NewMockClustersInterface(ctrl)
+	mockDeleteClustersInterface := NewMockDeleteClustersInterface(ctrl)
+
+	// Set up expectations
+	expectedOperation := &container.Operation{
+		Name: "test-operation",
+	}
+
+	// Expect the Delete method to be called with the correct parameters and return the mock DeleteClustersInterface
+	mockClustersInterface.EXPECT().
+		Delete(projectID, zone, "test-cluster").
+		Return(mockDeleteClustersInterface)
+
+	// Expect the Do method to be called and return the expected operation
+	mockDeleteClustersInterface.EXPECT().
+		Do().
+		Return(expectedOperation, nil)
+
+	// Create the API cluster with the mock
+	api := &API{
+		Container: ContainerService{
+			Clients: ContainerClients{
+				Clusters: mockClustersInterface,
+			},
+		},
+		Config: Config{
+			ProjectId: projectID,
+		},
+	}
+
+	// Call the function under test
+	operation, err := api.DeleteCluster(zone, "test-cluster")
+
+	// Verify the results
+	if err != nil {
+		t.Fatalf("DeleteCluster returned an error: %v", err)
+	}
+
+	if operation != expectedOperation {
+		t.Errorf("Expected operation %v, got %v", expectedOperation, operation)
+	}
+}
+
+func TestGetCluster(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// Create mocks
+	mockClustersInterface := NewMockClustersInterface(ctrl)
+	mockGetClustersInterface := NewMockGetClustersInterface(ctrl)
+
+	// Set up expectations
+	expectedCluster := &container.Cluster{
+		Name:             "test-cluster",
+		InitialNodeCount: 1,
+	}
+
+	// Expect the Get method to be called with the correct parameters and return the mock GetClustersInterface
+	mockClustersInterface.EXPECT().
+		Get(projectID, zone, "test-cluster").
+		Return(mockGetClustersInterface)
+
+	// Expect the Do method to be called and return the expected cluster
+	mockGetClustersInterface.EXPECT().
+		Do().
+		Return(expectedCluster, nil)
+
+	// Create the API cluster with the mock
+	api := &API{
+		Container: ContainerService{
+			Clients: ContainerClients{
+				Clusters: mockClustersInterface,
+			},
+		},
+		Config: Config{
+			ProjectId: projectID,
+		},
+	}
+
+	// Call the function under test
+	cluster, err := api.GetCluster(zone, "test-cluster")
+
+	// Verify the results
+	if err != nil {
+		t.Fatalf("GetCluster returned an error: %v", err)
+	}
+
+	if cluster != expectedCluster {
+		t.Errorf("Expected cluster %v, got %v", expectedCluster, cluster)
+	}
+}

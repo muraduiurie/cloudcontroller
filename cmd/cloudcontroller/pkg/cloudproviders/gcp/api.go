@@ -113,30 +113,30 @@ func (a *API) ListClusters(zone string) (*container.ListClustersResponse, error)
 	return resp, nil
 }
 
-//func (a *API) GetCluster(ctx context.Context, zone, clusterName string) (*container.Cluster, error) {
-//	resp, err := a.Container.Client.Projects.Zones.Clusters.Get(a.ProjectId, zone, clusterName).Context(ctx).Do()
-//	if err != nil {
-//		return nil, err
-//	}
-//	return resp, nil
-//}
-//
-//func (a *API) CreateCluster(ctx context.Context, zone string, cluster *container.Cluster) (*container.Operation, error) {
-//	resp, err := a.Container.Client.Projects.Zones.Clusters.Create(a.ProjectId, zone, &container.CreateClusterRequest{
-//		Cluster:   cluster,
-//		Zone:      zone,
-//		ProjectId: a.ProjectId,
-//	}).Context(ctx).Do()
-//	if err != nil {
-//		return nil, err
-//	}
-//	return resp, nil
-//}
-//
-//func (a *API) DeleteCluster(ctx context.Context, zone, clusterName string) (*container.Operation, error) {
-//	resp, err := a.Container.Client.Projects.Zones.Clusters.Delete(a.ProjectId, zone, clusterName).Context(ctx).Do()
-//	if err != nil {
-//		return nil, err
-//	}
-//	return resp, nil
-//}
+func (a *API) GetCluster(zone, clusterName string) (*container.Cluster, error) {
+	resp, err := a.Container.Clients.Clusters.Get(a.ProjectId, zone, clusterName).Do()
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (a *API) CreateCluster(zone string, cluster *container.Cluster) (*container.Operation, error) {
+	resp, err := a.Container.Clients.Clusters.Create(a.ProjectId, zone, &container.CreateClusterRequest{
+		Cluster:   cluster,
+		Zone:      zone,
+		ProjectId: a.ProjectId,
+	}).Do()
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (a *API) DeleteCluster(zone, clusterName string) (*container.Operation, error) {
+	resp, err := a.Container.Clients.Clusters.Delete(a.ProjectId, zone, clusterName).Do()
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
