@@ -72,5 +72,5 @@ uninstall: ## Deploy the operator
 .PHYONY: mock
 mock: ## Generate mocks
 	@echo "Generating mocks..."
-	cd cmd/cloudcontroller && mockgen -source=pkg/cloudproviders/gcp/gcp.go -destination=pkg/cloudproviders/gcp/mock.go -package=gcp && cd -
+	cd cmd/cloudcontroller && mockgen -source=pkg/cloudproviders/gcp/client.go -destination=pkg/cloudproviders/gcp/mock.go -package=gcp && cd -
 	@echo "Mocks generated."

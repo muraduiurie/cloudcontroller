@@ -4,7 +4,6 @@ import (
 	"context"
 	"google.golang.org/api/compute/v1"
 	"google.golang.org/api/container/v1"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 )
 
@@ -20,78 +19,6 @@ type Config struct {
 	AuthProviderX509CertUrl string `json:"auth_provider_x509_cert_url"`
 	ClientX509CertUrl       string `json:"client_x509_cert_url"`
 	UniverseDomain          string `json:"universe_domain"`
-}
-
-type (
-	GCPInstances struct {
-		InstancesService *compute.InstancesService
-	}
-	GCPKubernetesClusters struct {
-		ClustersService *container.ProjectsZonesClustersService
-	}
-)
-
-type (
-	ContainerService struct {
-		Clients ContainerClients
-	}
-	ComputeService struct {
-		Clients ComputeClients
-	}
-)
-
-type (
-	ComputeClients struct {
-		Instances InstancesInterface
-	}
-	ContainerClients struct {
-		Clusters ClustersInterface
-	}
-)
-
-type (
-	InstancesInterface interface {
-		List(project, zone string) ListInstancesInterface
-	}
-	ClustersInterface interface {
-		List(project, zone string) ListClustersInterface
-	}
-)
-
-type (
-	ListInstancesInterface interface {
-		Do(opts ...googleapi.CallOption) (*compute.InstanceList, error)
-	}
-	ListClustersInterface interface {
-		Do(opts ...googleapi.CallOption) (*container.ListClustersResponse, error)
-	}
-)
-
-type (
-	ListInstancesRequest struct {
-		googleCall *compute.InstancesListCall
-	}
-	ListClustersRequest struct {
-		googleCall *container.ProjectsZonesClustersListCall
-	}
-)
-
-// List requests
-func (lc *ListInstancesRequest) Do(opts ...googleapi.CallOption) (*compute.InstanceList, error) {
-	return lc.googleCall.Do(opts...)
-}
-func (lc *ListClustersRequest) Do(opts ...googleapi.CallOption) (*container.ListClustersResponse, error) {
-	return lc.googleCall.Do(opts...)
-}
-func (i *GCPInstances) List(projectID, zone string) ListInstancesInterface {
-	return &ListInstancesRequest{
-		googleCall: i.InstancesService.List(projectID, zone),
-	}
-}
-func (g *GCPKubernetesClusters) List(projectID, zone string) ListClustersInterface {
-	return &ListClustersRequest{
-		googleCall: g.ClustersService.List(projectID, zone),
-	}
 }
 
 type API struct {
@@ -122,6 +49,9 @@ func NewAPI(ctx context.Context, gcpSaFilePath string) (*API, error) {
 				Instances: &GCPInstances{
 					InstancesService: computeService.Instances,
 				},
+				Networks: &GCPNetworks{
+					NetworksService: computeService.Networks,
+				},
 			},
 		},
 		Container: ContainerService{
@@ -143,22 +73,22 @@ func (a *API) ListInstances(zone string) (*compute.InstanceList, error) {
 	return resp, nil
 }
 
-//	func (a *API) ListNetworks(ctx context.Context) (*compute.NetworkList, error) {
-//		resp, err := a.Compute.Client.Networks.List(a.ProjectId).Context(ctx).Do()
-//		if err != nil {
-//			return nil, err
-//		}
-//		return resp, nil
-//	}
-//
-//	func (a *API) GetNetwork(ctx context.Context, nid string) (*compute.Network, error) {
-//		resp, err := a.Compute.Client.Networks.Get(a.ProjectId, nid).Context(ctx).Do()
-//		if err != nil {
-//			return nil, err
-//		}
-//		return resp, nil
-//	}
-//
+func (a *API) ListNetworks() (*compute.NetworkList, error) {
+	resp, err := a.Compute.Clients.Networks.List(a.ProjectId).Do()
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (a *API) GetNetwork(nid string) (*compute.Network, error) {
+	resp, err := a.Compute.Clients.Networks.Get(a.ProjectId, nid).Do()
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 //	func (a *API) CreateNetwork(ctx context.Context, network *compute.Network) (*compute.Operation, error) {
 //		resp, err := a.Compute.Client.Networks.Insert(a.ProjectId, network).Context(ctx).Do()
 //		if err != nil {
