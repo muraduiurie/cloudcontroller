@@ -1,1 +1,2 @@
 cmd/cloudcontroller/creds/gcp-creds.json
+envtest/*
