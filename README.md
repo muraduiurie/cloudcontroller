@@ -6,7 +6,7 @@ Kubernetes Operator for deploying Cloud resources via Kubernetes CRDs
 
 #### Instructions:
 
-- Place GCP Service Account credentials JSON file in `creds` directory
+- Place GCP Service Account credentials JSON file in `creds` secret
 
 #### Makefile commands:
 

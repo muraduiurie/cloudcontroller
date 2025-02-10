@@ -81,9 +81,9 @@ autoscaling:
 
 # Additional volumes on the output Deployment definition.
 volumes:
-  - name: "gcp-creds"
+  - name: "creds"
     secret:
-      secretName: "gcp-creds"
+      secretName: "creds"
       optional: false
   - name: "controller-configs"
     configMap:
@@ -96,7 +96,7 @@ volumes:
 
 # Additional volumeMounts on the output Deployment definition.
 volumeMounts:
-  - name: "gcp-creds"
+  - name: "creds"
     mountPath: "/var/run/secrets/controller"
     readOnly: true
   - name: "controller-configs"

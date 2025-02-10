@@ -13,8 +13,6 @@ type GCPKubernetesClusterList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
 
-	// Items is the list of GCPKubernetesClusters
-	// +kubebuilder:validation:Required
 	Items []GCPKubernetesCluster `json:"items"`
 }
 
@@ -26,19 +24,16 @@ type GCPKubernetesCluster struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	// Spec defines the desired state of GCPKubernetesCluster
-	// +kubebuilder:validation:Required
-	Spec GCPKubernetesClusterSpec `json:"spec"`
-	// Status defines the observed state of GCPKubernetesCluster
-	// +kubebuilder:validation:Optional
+	Spec   GCPKubernetesClusterSpec   `json:"spec"`
 	Status GCPKubernetesClusterStatus `json:"status"`
 }
 
+// GCPKubernetesClusterSpec defines the desired state of GCPKubernetesCluster
 type GCPKubernetesClusterSpec struct {
 	// Name of the GCP Kubernetes cluster
 	// +kubebuilder:validation:Required
 	Name string `json:"name"`
-	// InitialNodeCount: The number of nodes to create in this cluster. You must
+	// InitialNodeCount defines the number of nodes to create in this cluster. You must
 	// ensure that your Compute Engine resource quota
 	// +kubebuilder:validation:Required
 	InitialNodeCount int32 `json:"initialNodeCount"`
@@ -86,6 +81,7 @@ type GCPKubernetesClusterSpec struct {
 	Subnetwork string `json:"subnetwork,omitempty"`
 }
 
+// NodePool defines the node pool configuration
 type NodePool struct {
 	// Name of the node pool.
 	// +kubebuilder:validation:Required
@@ -106,6 +102,7 @@ type NodePool struct {
 	InitialNodeCount int64 `json:"initialNodeCount,omitempty"`
 }
 
+// NodeConfig defines the node configuration
 type NodeConfig struct {
 	// DiskSizeGb defines the size of the disk attached to each node, specified in GB. The
 	// smallest allowed disk size is 10GB. If unspecified, the default disk size is

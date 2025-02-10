@@ -5,4 +5,4 @@ metadata:
 spec:
   name: my-gcp-kubernetes-cluster
   initialNodeCount: 3
-  #zone: us-central1-a
+  zone: us-central1-a
