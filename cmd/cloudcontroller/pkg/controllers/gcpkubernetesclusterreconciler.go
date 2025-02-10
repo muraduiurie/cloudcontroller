@@ -34,13 +34,13 @@ func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctr
 		return ctrl.Result{}, err
 	}
 
-	//// Check if GCP kubernetes cluster exists
-	//gke, err := cr.cloud.GCP.GetCluster(ctx, gk.Spec.Zone, gk.Spec.Name)
-	//if err != nil {
-	//	logger.Error(err, "error getting GCP Kubernetes Cluster: %v", err)
-	//	fmt.Printf("%+v\n", gke)
-	//	return ctrl.Result{}, err
-	//}
+	// Check if GCP kubernetes cluster exists
+	gke, err := cr.cloud.GCP.GetCluster(gk.Spec.Zone, gk.Spec.Name)
+	if err != nil {
+		logger.Error(err, "error getting GCP Kubernetes Cluster: %v", err)
+		fmt.Printf("%+v\n", gke)
+		return ctrl.Result{}, err
+	}
 
 	logger.Info("gcp kubernetes cluster reconciled")
 	cr.eventRecorder.Event(&gk, "Normal", "Reconciled", "GCP Kubernetes Cluster reconciled")

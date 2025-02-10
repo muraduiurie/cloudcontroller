@@ -161,9 +161,14 @@ spec:
                   (https://cloud.google.com/compute/docs/subnetworks) to which the cluster is
                   connected.
                 type: string
+              zone:
+                description: Zone is the zone in which the GCP Kubernetes cluster
+                  resides
+                type: string
             required:
             - initialNodeCount
             - name
+            - zone
             type: object
           status:
             description: Status defines the observed state of GCPKubernetesCluster
