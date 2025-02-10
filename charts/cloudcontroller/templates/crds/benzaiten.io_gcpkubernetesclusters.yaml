@@ -20,7 +20,7 @@ spec:
     schema:
       openAPIV3Schema:
         description: GCPKubernetesCluster is the Schema for the gcpkubernetesclusters
-          API
+          API.
         properties:
           apiVersion:
             description: |-
@@ -43,129 +43,86 @@ spec:
             properties:
               autopilot:
                 description: Autopilot enables the Autopilot mode for the cluster.
-                  By default it is disabled.
                 type: boolean
               clusterIpv4Cidr:
-                description: |-
-                  ClusterIpv4Cidr defines the IP address range of the container pods in this cluster,
-                  in CIDR (http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
-                  notation (e.g. `10.96.0.0/14`). Leave blank to have one automatically chosen
-                  or specify a `/14` block in `10.0.0.0/8`.
+                description: ClusterIpv4Cidr defines the IP address range of the container
+                  pods in this cluster.
+                type: string
+              clusterName:
+                description: ClusterName of the GCP Kubernetes cluster.
                 type: string
               description:
                 description: Description of this cluster.
                 type: string
               initialClusterVersion:
-                description: |-
-                  InitialClusterVersion defines the initial Kubernetes version for this cluster.
-                  Valid versions are those found in validMasterVersions returned by
-                  getServerConfig. The version can be upgraded over time; such upgrades are
-                  reflected in currentMasterVersion and currentNodeVersion. Users may specify
-                  either explicit versions offered by Kubernetes Engine or version aliases,
-                  which have the following behavior: - "latest": picks the highest valid
-                  Kubernetes version - "1.X": picks the highest valid patch+gke.N patch in the
-                  1.X version - "1.X.Y": picks the highest valid gke.N patch in the 1.X.Y
-                  version - "1.X.Y-gke.N": picks an explicit Kubernetes version - "","-":
-                  picks the default Kubernetes version
+                description: InitialClusterVersion defines the initial Kubernetes
+                  version for this cluster.
                 type: string
               initialNodeCount:
-                description: |-
-                  InitialNodeCount defines the number of nodes to create in this cluster. You must
-                  ensure that your Compute Engine resource quota
+                description: InitialNodeCount defines the number of nodes to create
+                  in this cluster.
                 format: int32
                 type: integer
-              name:
-                description: Name of the GCP Kubernetes cluster
-                type: string
               network:
-                description: |-
-                  Network of the Google Compute Engine network
-                  (https://cloud.google.com/compute/docs/networks-and-firewalls#networks) to
-                  which the cluster is connected. If left unspecified, the `default` network
-                  will be used.
+                description: Network of the Google Compute Engine network which the
+                  cluster is connected.
                 type: string
               nodePools:
-                description: |-
-                  NodePools associated with this cluster. This field should
-                  not be set if "node_config" or "initial_node_count" are specified.
+                description: NodePools associated with this cluster.
                 items:
                   properties:
                     config:
                       description: Config defines the node configuration of the pool.
                       properties:
                         diskSizeGb:
-                          description: |-
-                            DiskSizeGb defines the size of the disk attached to each node, specified in GB. The
-                            smallest allowed disk size is 10GB. If unspecified, the default disk size is
-                            100GB.
+                          description: DiskSizeGb defines the size of the disk attached
+                            to each node, specified in GB.
                           format: int64
                           type: integer
                         diskType:
-                          description: |-
-                            DiskType is the type of the disk attached to each node (e.g. 'pd-standard',
-                            'pd-ssd' or 'pd-balanced') If unspecified, the default disk type is
-                            'pd-standard'
+                          description: DiskType is the type of the disk attached to
+                            each node.
                           type: string
                         imageType:
-                          description: |-
-                            ImageType to use for this node. Note that for a given image
-                            type, the latest version of it will be used. Please see
-                            https://cloud.google.com/kubernetes-engine/docs/concepts/node-images for
-                            available image types.
+                          description: ImageType to use for this node.
                           type: string
                         labels:
                           additionalProperties:
                             type: string
-                          description: |-
-                            Labels is the map of Kubernetes labels (key/value pairs) to be applied to each
-                            node. These will added in addition to any default label(s) that Kubernetes
-                            may apply to the node. In case of conflict in label keys, the applied set
-                            may differ depending on the Kubernetes version -- it's best to assume the
-                            behavior is undefined and conflicts should be avoided. For more information,
-                            including usage and the valid values, see:
-                            https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+                          description: Labels is the map of Kubernetes labels (key/value
+                            pairs) to be applied to each node.
                           type: object
                         machineType:
-                          description: |-
-                            MachineType is the name of a Google Compute Engine machine type
-                            (https://cloud.google.com/compute/docs/machine-types) If unspecified, the
-                            default machine type is `e2-medium`.
+                          description: MachineType is the name of a Google Compute
+                            Engine machine type.
                           type: string
                       type: object
-                    initialNodeCount:
-                      description: |-
-                        InitialNodeCount defines the initial node count for the pool. You must ensure that
-                        your Compute Engine resource quota (https://cloud.google.com/compute/quotas)
-                        is sufficient for this number of instances. You must also have available
-                        firewall and routes quota.
+                    nodeCount:
+                      description: InitialNodeCount defines the initial node count
+                        for the pool.
                       format: int64
                       type: integer
-                    name:
-                      description: Name of the node pool.
+                    nodeName:
+                      description: NodeName of the node pool.
                       type: string
                     version:
-                      description: |-
-                        Version of Kubernetes running on this NodePool's nodes. If
-                        unspecified, it defaults as described here
-                        (https://cloud.google.com/kubernetes-engine/versioning#specifying_node_version).
+                      description: Version of Kubernetes running on this NodePool's
+                        nodes.
                       type: string
                   required:
-                  - initialNodeCount
-                  - name
+                  - nodeCount
+                  - nodeName
                   type: object
                 type: array
               subnetwork:
-                description: |-
-                  Subnetwork of the Google Compute Engine subnetwork
-                  (https://cloud.google.com/compute/docs/subnetworks) to which the cluster is
-                  connected.
+                description: Subnetwork of the Google Compute Engine subnetwork connected.
                 type: string
               zone:
-                description: Zone in which the GCP Kubernetes cluster resides
+                description: Zone in which the GCP Kubernetes cluster resides.
                 type: string
             required:
+            - clusterName
             - initialNodeCount
-            - name
             - zone
             type: object
           status:
@@ -176,7 +133,6 @@ spec:
             type: object
         required:
         - spec
-        - status
         type: object
     served: true
     storage: true

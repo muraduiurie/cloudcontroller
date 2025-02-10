@@ -35,7 +35,7 @@ func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctr
 	}
 
 	// Check if GCP kubernetes cluster exists
-	gke, err := cr.cloud.GCP.GetCluster(gk.Spec.Zone, gk.Spec.Name)
+	gke, err := cr.cloud.GCP.GetCluster(gk.Spec.Zone, gk.Spec.ClusterName)
 	if err != nil {
 		logger.Error(err, "error getting GCP Kubernetes Cluster: %v", err)
 		return ctrl.Result{}, err

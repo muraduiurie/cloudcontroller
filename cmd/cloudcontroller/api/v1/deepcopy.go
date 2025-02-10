@@ -11,8 +11,16 @@ func (in *GCPKubernetesCluster) DeepCopyInto(out *GCPKubernetesCluster) {
 	out.TypeMeta = in.TypeMeta
 	out.ObjectMeta = in.ObjectMeta
 	out.Spec = GCPKubernetesClusterSpec{
-		Name:             in.Spec.Name,
-		InitialNodeCount: in.Spec.InitialNodeCount,
+		ClusterName:           in.Spec.ClusterName,
+		InitialNodeCount:      in.Spec.InitialNodeCount,
+		Zone:                  in.Spec.Zone,
+		Autopilot:             in.Spec.Autopilot,
+		ClusterIpv4Cidr:       in.Spec.ClusterIpv4Cidr,
+		Description:           in.Spec.Description,
+		InitialClusterVersion: in.Spec.InitialClusterVersion,
+		Network:               in.Spec.Network,
+		NodePools:             in.Spec.NodePools,
+		Subnetwork:            in.Spec.Subnetwork,
 	}
 }
 

@@ -31,11 +31,11 @@ var (
 )
 
 const (
-	defaultZone      = "us-central1-a"
+	defaultZone      = "test-zone"
 	defaultProjectID = "test-project"
 	defaultGKCName   = "test-gkc"
 	defaultNamespace = "default"
-	//networkID        = "test-network"
+	defaultNetwork   = "test-network"
 )
 
 func TestMain(m *testing.M) {
@@ -147,9 +147,10 @@ func createFakeGKC(fakeClient client.Client) (*benzaiten.GCPKubernetesCluster, e
 		},
 		Spec: benzaiten.GCPKubernetesClusterSpec{
 			Zone:             defaultZone,
-			Name:             defaultGKCName,
+			ClusterName:      defaultGKCName,
 			InitialNodeCount: 3,
 			Autopilot:        true,
+			Network:          defaultNetwork,
 		},
 	}
 

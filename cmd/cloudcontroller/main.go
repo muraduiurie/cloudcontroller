@@ -2,18 +2,25 @@ package main
 
 import (
 	"github.com/charmelionag/cloudcontroller/pkg/controllers"
-	"k8s.io/client-go/rest"
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 )
 
 func main() {
-	// initiate config for in cluster client
-	kubeconfig, err := rest.InClusterConfig()
+	// create new manager with client and scheme
+	ctrl.SetLogger(zap.New())
+	ctrl.Log.Info("setting up manager")
+	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
+		Scheme: controllers.Scheme,
+	})
 	if err != nil {
-		panic(err.Error())
+		controllers.SetupLog.Error(err, "unable to create controller manager")
 	}
 
-	err = controllers.RunOperator(kubeconfig)
+	// initiate the context
+	ctx := ctrl.SetupSignalHandler()
+	err = controllers.RunControllers(ctx, mgr)
 	if err != nil {
-		panic(err.Error())
+		controllers.SetupLog.Error(err, "unable to run controllers")
 	}
 }
