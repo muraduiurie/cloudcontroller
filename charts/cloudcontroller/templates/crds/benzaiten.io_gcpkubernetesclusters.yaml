@@ -40,7 +40,6 @@ spec:
           metadata:
             type: object
           spec:
-            description: Spec defines the desired state of GCPKubernetesCluster
             properties:
               autopilot:
                 description: Autopilot enables the Autopilot mode for the cluster.
@@ -71,7 +70,7 @@ spec:
                 type: string
               initialNodeCount:
                 description: |-
-                  InitialNodeCount: The number of nodes to create in this cluster. You must
+                  InitialNodeCount defines the number of nodes to create in this cluster. You must
                   ensure that your Compute Engine resource quota
                 format: int32
                 type: integer
@@ -170,7 +169,6 @@ spec:
             - zone
             type: object
           status:
-            description: Status defines the observed state of GCPKubernetesCluster
             properties:
               phase:
                 description: Phase is the current state of the GCP Kubernetes cluster
@@ -178,6 +176,7 @@ spec:
             type: object
         required:
         - spec
+        - status
         type: object
     served: true
     storage: true

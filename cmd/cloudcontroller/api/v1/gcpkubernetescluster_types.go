@@ -1,6 +1,3 @@
-// Package v1 is the v1 version of the API.
-// Package v1 +kubebuilder:object:generate=true
-// +groupName=benzaiten.io
 package v1
 
 import (
@@ -28,7 +25,6 @@ type GCPKubernetesCluster struct {
 	Status GCPKubernetesClusterStatus `json:"status"`
 }
 
-// GCPKubernetesClusterSpec defines the desired state of GCPKubernetesCluster
 type GCPKubernetesClusterSpec struct {
 	// Name of the GCP Kubernetes cluster
 	// +kubebuilder:validation:Required
@@ -81,7 +77,6 @@ type GCPKubernetesClusterSpec struct {
 	Subnetwork string `json:"subnetwork,omitempty"`
 }
 
-// NodePool defines the node pool configuration
 type NodePool struct {
 	// Name of the node pool.
 	// +kubebuilder:validation:Required
@@ -102,7 +97,6 @@ type NodePool struct {
 	InitialNodeCount int64 `json:"initialNodeCount,omitempty"`
 }
 
-// NodeConfig defines the node configuration
 type NodeConfig struct {
 	// DiskSizeGb defines the size of the disk attached to each node, specified in GB. The
 	// smallest allowed disk size is 10GB. If unspecified, the default disk size is
@@ -136,7 +130,6 @@ type NodeConfig struct {
 	MachineType string `json:"machineType,omitempty"`
 }
 
-// GCPKubernetesClusterStatus defines the observed state of GCPKubernetesCluster
 type GCPKubernetesClusterStatus struct {
 	// Phase is the current state of the GCP Kubernetes cluster
 	// +kubebuilder:validation:Optional
