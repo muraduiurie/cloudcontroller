@@ -81,3 +81,9 @@ envtest: ## Setup envtest
 	@echo "Setting up envtest..."
 	setup-envtest cleanup && setup-envtest use $(ENVTEST_K8S_VERSION) --bin-dir envtest
 	@echo "Setup complete."
+
+.PHYONY: envtest-clean
+envtest-clean: ## Setup envtest
+	@echo "Cleaning up envtest..."
+	setup-envtest cleanup
+	@echo "Cleaning complete."

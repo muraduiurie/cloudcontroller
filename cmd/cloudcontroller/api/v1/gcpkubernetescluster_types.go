@@ -35,13 +35,16 @@ type GCPKubernetesCluster struct {
 }
 
 type GCPKubernetesClusterSpec struct {
-	// Name is the name of the GCP Kubernetes cluster
+	// Name of the GCP Kubernetes cluster
 	// +kubebuilder:validation:Required
 	Name string `json:"name"`
 	// InitialNodeCount: The number of nodes to create in this cluster. You must
 	// ensure that your Compute Engine resource quota
 	// +kubebuilder:validation:Required
 	InitialNodeCount int32 `json:"initialNodeCount"`
+	// Zone in which the GCP Kubernetes cluster resides
+	// +kubebuilder:validation:Required
+	Zone string `json:"zone"`
 	// Autopilot enables the Autopilot mode for the cluster. By default it is disabled.
 	// +kubebuilder:validation:Optional
 	Autopilot bool `json:"autopilot,omitempty"`
@@ -81,9 +84,6 @@ type GCPKubernetesClusterSpec struct {
 	// connected.
 	// +kubebuilder:validation:Optional
 	Subnetwork string `json:"subnetwork,omitempty"`
-	// Zone is the zone in which the GCP Kubernetes cluster resides
-	// +kubebuilder:validation:Required
-	Zone string `json:"zone"`
 }
 
 type NodePool struct {

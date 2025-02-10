@@ -76,7 +76,7 @@ spec:
                 format: int32
                 type: integer
               name:
-                description: Name is the name of the GCP Kubernetes cluster
+                description: Name of the GCP Kubernetes cluster
                 type: string
               network:
                 description: |-
@@ -162,8 +162,7 @@ spec:
                   connected.
                 type: string
               zone:
-                description: Zone is the zone in which the GCP Kubernetes cluster
-                  resides
+                description: Zone in which the GCP Kubernetes cluster resides
                 type: string
             required:
             - initialNodeCount
