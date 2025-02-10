@@ -3,7 +3,7 @@ package controllers
 import (
 	"context"
 	"fmt"
-	cloudv1 "github.com/charmelionag/cloudcontroller/api/v1"
+	benzaiten "github.com/charmelionag/cloudcontroller/api/v1"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/tools/record"
@@ -23,7 +23,7 @@ type GCPInstanceReconciler struct {
 func (cr *GCPInstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	logger := log.FromContext(ctx).WithValues("gcpinstance", req.NamespacedName)
 
-	gk := cloudv1.GCPInstance{}
+	gk := benzaiten.GCPInstance{}
 
 	err := cr.Get(ctx, req.NamespacedName, &gk)
 	if err != nil {
@@ -44,7 +44,7 @@ func (cr *GCPInstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request
 
 func (cr *GCPInstanceReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&cloudv1.GCPInstance{}).
+		For(&benzaiten.GCPInstance{}).
 		Complete(cr)
 }
 
