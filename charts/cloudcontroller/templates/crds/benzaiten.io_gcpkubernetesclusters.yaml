@@ -61,7 +61,7 @@ spec:
               initialNodeCount:
                 description: InitialNodeCount defines the number of nodes to create
                   in this cluster.
-                format: int32
+                format: int64
                 type: integer
               network:
                 description: Network of the Google Compute Engine network which the

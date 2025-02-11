@@ -24,7 +24,6 @@ func (cr *GCPInstanceReconciler) Reconcile(ctx context.Context, req ctrl.Request
 	logger := log.FromContext(ctx).WithValues("gcpinstance", req.NamespacedName)
 
 	gk := benzaiten.GCPInstance{}
-
 	err := cr.Get(ctx, req.NamespacedName, &gk)
 	if err != nil {
 		if kerr.IsNotFound(err) {

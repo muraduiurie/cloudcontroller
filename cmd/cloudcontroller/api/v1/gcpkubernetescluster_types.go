@@ -31,7 +31,7 @@ type GCPKubernetesClusterSpec struct {
 	ClusterName string `json:"clusterName"`
 	// InitialNodeCount defines the number of nodes to create in this cluster.
 	// +kubebuilder:validation:Required
-	InitialNodeCount int32 `json:"initialNodeCount"`
+	InitialNodeCount int64 `json:"initialNodeCount"`
 	// Zone in which the GCP Kubernetes cluster resides.
 	// +kubebuilder:validation:Required
 	Zone string `json:"zone"`

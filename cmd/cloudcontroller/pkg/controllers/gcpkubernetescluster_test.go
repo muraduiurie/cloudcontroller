@@ -139,7 +139,7 @@ func createFakeGCPApiGetDefaultClusterClient(ctrl *gomock.Controller) *gcp.API {
 	return api
 }
 
-func createFakeGKC(fakeClient client.Client) (*benzaiten.GCPKubernetesCluster, error) {
+func createFakeDefaultGKC(fakeClient client.Client) (*benzaiten.GCPKubernetesCluster, error) {
 	gkcCreate := benzaiten.GCPKubernetesCluster{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      defaultGKCName,
@@ -148,9 +148,7 @@ func createFakeGKC(fakeClient client.Client) (*benzaiten.GCPKubernetesCluster, e
 		Spec: benzaiten.GCPKubernetesClusterSpec{
 			Zone:             defaultZone,
 			ClusterName:      defaultGKCName,
-			InitialNodeCount: 3,
-			Autopilot:        true,
-			Network:          defaultNetwork,
+			InitialNodeCount: 1,
 		},
 	}
 
@@ -180,7 +178,7 @@ func TestGKCReconciler_GetClusterNoChanges(t *testing.T) {
 		GCP: createFakeGCPApiGetDefaultClusterClient(mockCtrl),
 	}
 
-	gkc, err := createFakeGKC(rec.Client)
+	gkc, err := createFakeDefaultGKC(rec.Client)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -189,4 +187,18 @@ func TestGKCReconciler_GetClusterNoChanges(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
+}
+
+func TestGetGCPKubernetesCluster(t *testing.T) {
+	api, err := gcp.NewAPI(context.Background(), "../../creds/gcp-creds.json")
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	cluster, err := api.GetNetwork("default-0")
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	fmt.Println(cluster)
 }

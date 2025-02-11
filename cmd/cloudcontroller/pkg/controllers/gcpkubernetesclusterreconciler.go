@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	benzaiten "github.com/charmelionag/cloudcontroller/api/v1"
+	"google.golang.org/api/container/v1"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/tools/record"
@@ -11,6 +12,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
+	"strings"
 )
 
 type GCPKubernetesClusterReconciler struct {
@@ -22,10 +24,8 @@ type GCPKubernetesClusterReconciler struct {
 
 func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	logger := log.FromContext(ctx).WithValues("gcpkubernetescluster", req.NamespacedName)
-
-	gk := benzaiten.GCPKubernetesCluster{}
-
-	err := cr.Get(ctx, req.NamespacedName, &gk)
+	gkcCR := benzaiten.GCPKubernetesCluster{}
+	err := cr.Get(ctx, req.NamespacedName, &gkcCR)
 	if err != nil {
 		if kerr.IsNotFound(err) {
 			logger.Info("gcpkubernetescluster not found")
@@ -34,17 +34,27 @@ func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctr
 		return ctrl.Result{}, err
 	}
 
-	// Check if GCP kubernetes cluster exists
-	gke, err := cr.cloud.GCP.GetCluster(gk.Spec.Zone, gk.Spec.ClusterName)
-	if err != nil {
-		logger.Error(err, "error getting GCP Kubernetes Cluster: %v", err)
+	// get the GCP kubernetes cluster from cloud
+	gkc, err := cr.cloud.GCP.GetCluster(gkcCR.Spec.Zone, gkcCR.Spec.ClusterName)
+	if err != nil && notFoundGCPResource(err) {
+		logger.Info("gcpkubernetescluster not found, creating cluster...")
+		_, err = cr.cloud.GCP.CreateCluster(gkcCR.Spec.Zone, &container.Cluster{
+			Name:             gkcCR.Spec.ClusterName,
+			InitialNodeCount: gkcCR.Spec.InitialNodeCount,
+		})
+		if err != nil {
+			logger.Error(err, "error creating gcpkubernetescluster")
+			return ctrl.Result{}, err
+		}
+	} else if err != nil {
+		logger.Error(err, "error getting gcpkubernetescluster")
 		return ctrl.Result{}, err
 	}
 
-	fmt.Println(gke)
+	logger.Info("gcpkubernetescluster found, synchronizing...", "gcpkubernetescluster", gkc)
 
 	logger.Info("gcp kubernetes cluster reconciled")
-	cr.eventRecorder.Event(&gk, "Normal", "Reconciled", "GCP Kubernetes Cluster reconciled")
+	cr.eventRecorder.Event(&gkcCR, "Normal", "Reconciled", "GCP Kubernetes Cluster reconciled")
 
 	return ctrl.Result{}, nil
 }
@@ -71,4 +81,8 @@ func setupGCPKubernetesClusterController(mgr manager.Manager, cp CloudProviders)
 	}
 
 	return nil
+}
+
+func notFoundGCPResource(err error) bool {
+	return strings.Split(fmt.Sprintf("%v", err), ":")[0] == "Error 404"
 }
