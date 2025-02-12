@@ -102,7 +102,7 @@ func newFakeGKCReconciler() (*GCPKubernetesClusterReconciler, error) {
 	}, nil
 }
 
-func createFakeGCPApiGetDefaultClusterClient(ctrl *gomock.Controller) *gcp.API {
+func createFakeGCPApiClient_ExistsCluster(ctrl *gomock.Controller) *gcp.API {
 	// Create mocks
 	mockClustersInterface := gcp.NewMockClustersInterface(ctrl)
 	mockGetClustersInterface := gcp.NewMockGetClustersInterface(ctrl)
@@ -123,6 +123,45 @@ func createFakeGCPApiGetDefaultClusterClient(ctrl *gomock.Controller) *gcp.API {
 	mockGetClustersInterface.EXPECT().
 		Do().
 		Return(expectedCluster, nil)
+
+	// Create the API cluster with the mock
+	api := &gcp.API{
+		Container: gcp.ContainerService{
+			Clients: gcp.ContainerClients{
+				Clusters: mockClustersInterface,
+			},
+		},
+		Config: gcp.Config{
+			ProjectId: defaultProjectID,
+		},
+	}
+
+	return api
+}
+
+func createFakeGCPApiClient_CreateCluster(ctrl *gomock.Controller) *gcp.API {
+	mockClustersInterface := gcp.NewMockClustersInterface(ctrl)
+	mockGetClustersInterface := gcp.NewMockGetClustersInterface(ctrl)
+	mockCreateClustersInterface := gcp.NewMockCreateClustersInterface(ctrl)
+
+	// Expectations for Get
+	mockClustersInterface.EXPECT().
+		Get(defaultProjectID, defaultZone, defaultGKCName).
+		Return(mockGetClustersInterface)
+
+	// Expect the Do method to be called and return the expected cluster
+	mockGetClustersInterface.EXPECT().
+		Do().
+		Return(nil, fmt.Errorf("googleapi: Error 404: Not found"))
+
+	// Expectations for Create
+	expectedOperation := &container.Operation{Name: defaultGKCName}
+	mockClustersInterface.EXPECT().
+		Create(defaultProjectID, defaultZone, gomock.Any()).
+		Return(mockCreateClustersInterface)
+	mockCreateClustersInterface.EXPECT().
+		Do().
+		Return(expectedOperation, nil)
 
 	// Create the API cluster with the mock
 	api := &gcp.API{
@@ -175,7 +214,7 @@ func TestGKCReconciler_GetClusterNoChanges(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	rec.cloud = CloudProviders{
-		GCP: createFakeGCPApiGetDefaultClusterClient(mockCtrl),
+		GCP: createFakeGCPApiClient_ExistsCluster(mockCtrl),
 	}
 
 	gkc, err := createFakeDefaultGKC(rec.Client)
@@ -189,13 +228,46 @@ func TestGKCReconciler_GetClusterNoChanges(t *testing.T) {
 	}
 }
 
+func TestGKCReconciler_CreateCluster(t *testing.T) {
+	rec, err := newFakeGKCReconciler()
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	rec.cloud = CloudProviders{
+		GCP: createFakeGCPApiClient_CreateCluster(mockCtrl),
+	}
+
+	gkc, err := createFakeDefaultGKC(rec.Client)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	_, err = rec.Reconcile(context.TODO(), ctrl.Request{NamespacedName: types.NamespacedName{Name: gkc.Name, Namespace: gkc.Namespace}})
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	var gkcCreated benzaiten.GCPKubernetesCluster
+	err = rec.Get(context.TODO(), types.NamespacedName{Name: gkc.Name, Namespace: gkc.Namespace}, &gkcCreated)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	if gkcCreated.Status.Phase != benzaiten.ClusterStatusCreating {
+		t.Fatalf("expected cluster status ClusterStatusCreating, got %v", gkcCreated.Status.Phase)
+	}
+}
+
 func TestGetGCPKubernetesCluster(t *testing.T) {
 	api, err := gcp.NewAPI(context.Background(), "../../creds/gcp-creds.json")
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	cluster, err := api.GetNetwork("default-0")
+	cluster, err := api.GetCluster("us-central1-a", "my-gcp-kubernetes-cluster")
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}

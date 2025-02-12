@@ -22,6 +22,9 @@ func (in *GCPKubernetesCluster) DeepCopyInto(out *GCPKubernetesCluster) {
 		NodePools:             in.Spec.NodePools,
 		Subnetwork:            in.Spec.Subnetwork,
 	}
+	out.Status = GCPKubernetesClusterStatus{
+		Phase: in.Status.Phase,
+	}
 }
 
 func (in *GCPKubernetesCluster) DeepCopyObject() runtime.Object {

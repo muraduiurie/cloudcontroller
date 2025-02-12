@@ -17,6 +17,7 @@ type GCPKubernetesClusterList struct {
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:scope=Namespaced,path=gcpkubernetesclusters,shortName=gkc,singular=gcpkubernetescluster
+// +kubebuilder:printcolumn:name="Status",type=string,JSONPath=".status.phase"
 type GCPKubernetesCluster struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -91,8 +92,15 @@ type NodeConfig struct {
 	MachineType string `json:"machineType,omitempty"`
 }
 
+type ClusterStatus string
+
+const (
+	ClusterStatusCreating ClusterStatus = "Creating"
+	ClusterStatusRunning  ClusterStatus = "Running"
+)
+
 type GCPKubernetesClusterStatus struct {
 	// Phase is the current state of the GCP Kubernetes cluster
 	// +kubebuilder:validation:Optional
-	Phase string `json:"phase,omitempty"`
+	Phase ClusterStatus `json:"phase,omitempty"`
 }

@@ -22,6 +22,7 @@ type GCPNetworkList struct {
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:scope=Namespaced,path=gcpnetworks,shortName=gn,singular=gcpnetwork
+// +kubebuilder:printcolumn:name="Status",type=string,JSONPath=".status.phase"
 type GCPNetwork struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

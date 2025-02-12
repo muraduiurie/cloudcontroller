@@ -16,7 +16,11 @@ spec:
     singular: gcpnetwork
   scope: Namespaced
   versions:
-  - name: v1
+  - additionalPrinterColumns:
+    - jsonPath: .status.phase
+      name: Status
+      type: string
+    name: v1
     schema:
       openAPIV3Schema:
         description: GCPNetwork is the Schema for the gcpnetworks API
