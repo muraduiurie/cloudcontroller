@@ -115,9 +115,9 @@ rbac:
     rules:
       - apiGroups: [""]
         resources: ["events"]
-        verbs: ["create"]
+        verbs: ["*"]
       - apiGroups: ["benzaiten.io"]
-        resources: ["gcpkubernetesclusters", "gcpnetworks", "gcpinstances"]
+        resources: ["gcpkubernetesclusters", "gcpkubernetesclusters/status", "gcpnetworks", "gcpnetworks/status", "gcpinstances", "gcpinstances/status"]
         verbs: ["*"]
 
 configMap:

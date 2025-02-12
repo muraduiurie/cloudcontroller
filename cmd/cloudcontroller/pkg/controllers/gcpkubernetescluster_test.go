@@ -141,18 +141,32 @@ func createFakeGCPApiClient_ExistsCluster(ctrl *gomock.Controller) *gcp.API {
 
 func createFakeGCPApiClient_CreateCluster(ctrl *gomock.Controller) *gcp.API {
 	mockClustersInterface := gcp.NewMockClustersInterface(ctrl)
-	mockGetClustersInterface := gcp.NewMockGetClustersInterface(ctrl)
+	mockGetFailedClustersInterface := gcp.NewMockGetClustersInterface(ctrl)
+	mockGetSuccessClustersInterface := gcp.NewMockGetClustersInterface(ctrl)
 	mockCreateClustersInterface := gcp.NewMockCreateClustersInterface(ctrl)
 
-	// Expectations for Get
+	// Expectations for failed Get
 	mockClustersInterface.EXPECT().
 		Get(defaultProjectID, defaultZone, defaultGKCName).
-		Return(mockGetClustersInterface)
-
-	// Expect the Do method to be called and return the expected cluster
-	mockGetClustersInterface.EXPECT().
+		Return(mockGetFailedClustersInterface)
+	// Expect the Do method to be called and return the error
+	failedCall := mockGetFailedClustersInterface.EXPECT().
 		Do().
-		Return(nil, fmt.Errorf("googleapi: Error 404: Not found"))
+		Return(nil, fmt.Errorf("googleapi: Error 404: Not found")).Times(1)
+
+	// Expectations for successful Get
+	mockClustersInterface.EXPECT().
+		Get(defaultProjectID, defaultZone, defaultGKCName).
+		Return(mockGetSuccessClustersInterface).After(failedCall)
+	// Expect the Do method to be called and return the running cluster
+	mockGetSuccessClustersInterface.EXPECT().
+		Do().
+		Return(&container.Cluster{
+			Name:             defaultGKCName,
+			InitialNodeCount: 1,
+			Zone:             defaultZone,
+			Status:           string(benzaiten.ClusterStatusRunning),
+		}, nil).Times(1)
 
 	// Expectations for Create
 	expectedOperation := &container.Operation{Name: defaultGKCName}
@@ -205,6 +219,10 @@ func createFakeDefaultGKC(fakeClient client.Client) (*benzaiten.GCPKubernetesClu
 	return &gk, nil
 }
 
+////////////////////////////////////////////////////
+// TESTS
+////////////////////////////////////////////////////
+
 func TestGKCReconciler_GetClusterNoChanges(t *testing.T) {
 	rec, err := newFakeGKCReconciler()
 	if err != nil {
@@ -256,7 +274,7 @@ func TestGKCReconciler_CreateCluster(t *testing.T) {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	if gkcCreated.Status.Phase != benzaiten.ClusterStatusCreating {
+	if gkcCreated.Status.Phase != benzaiten.ClusterStatusRunning {
 		t.Fatalf("expected cluster status ClusterStatusCreating, got %v", gkcCreated.Status.Phase)
 	}
 }
@@ -272,5 +290,5 @@ func TestGetGCPKubernetesCluster(t *testing.T) {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	fmt.Println(cluster)
+	t.Log(cluster)
 }

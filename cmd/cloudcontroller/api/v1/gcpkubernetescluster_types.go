@@ -95,8 +95,13 @@ type NodeConfig struct {
 type ClusterStatus string
 
 const (
-	ClusterStatusCreating ClusterStatus = "Creating"
-	ClusterStatusRunning  ClusterStatus = "Running"
+	ClusterStatusUnspecified  ClusterStatus = "STATUS_UNSPECIFIED"
+	ClusterStatusProvisioning ClusterStatus = "PROVISIONING"
+	ClusterStatusRunning      ClusterStatus = "RUNNING"
+	ClusterStatusReconciling  ClusterStatus = "RECONCILING"
+	ClusterStatusStopping     ClusterStatus = "STOPPING"
+	ClusterStatusError        ClusterStatus = "ERROR"
+	ClusterStatusDegraded     ClusterStatus = "DEGRADED"
 )
 
 type GCPKubernetesClusterStatus struct {
