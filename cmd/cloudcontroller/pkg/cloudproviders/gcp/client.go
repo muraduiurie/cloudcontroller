@@ -69,6 +69,7 @@ type (
 		Get(project, zone, cluster string) GetClustersInterface
 		Create(project, zone string, cluster *container.CreateClusterRequest) CreateClustersInterface
 		Delete(project, zone, cluster string) DeleteClustersInterface
+		Update(project, zone, cluster string, update *container.UpdateClusterRequest) UpdateClustersInterface
 	}
 )
 
@@ -107,6 +108,9 @@ type (
 	DeleteClustersInterface interface {
 		Do(opts ...googleapi.CallOption) (*container.Operation, error)
 	}
+	UpdateClustersInterface interface {
+		Do(opts ...googleapi.CallOption) (*container.Operation, error)
+	}
 )
 
 // Executor requests
@@ -143,6 +147,9 @@ type (
 	}
 	DeleteClustersRequest struct {
 		googleCall *container.ProjectsZonesClustersDeleteCall
+	}
+	UpdateClustersRequest struct {
+		googleCall *container.ProjectsZonesClustersUpdateCall
 	}
 )
 
@@ -202,6 +209,11 @@ func (g *GCPKubernetesClusters) Delete(projectID, zone, cluster string) DeleteCl
 		googleCall: g.ClustersService.Delete(projectID, zone, cluster),
 	}
 }
+func (g *GCPKubernetesClusters) Update(projectID, zone, cluster string, update *container.UpdateClusterRequest) UpdateClustersInterface {
+	return &UpdateClustersRequest{
+		googleCall: g.ClustersService.Update(projectID, zone, cluster, update),
+	}
+}
 
 // Execs
 // // Compute
@@ -236,5 +248,8 @@ func (lc *CreateClustersRequest) Do(opts ...googleapi.CallOption) (*container.Op
 	return lc.googleCall.Do(opts...)
 }
 func (lc *DeleteClustersRequest) Do(opts ...googleapi.CallOption) (*container.Operation, error) {
+	return lc.googleCall.Do(opts...)
+}
+func (lc *UpdateClustersRequest) Do(opts ...googleapi.CallOption) (*container.Operation, error) {
 	return lc.googleCall.Do(opts...)
 }

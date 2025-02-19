@@ -140,3 +140,17 @@ func (a *API) DeleteCluster(zone, clusterName string) (*container.Operation, err
 	}
 	return resp, nil
 }
+
+func (a *API) UpdateCluster(zone, clusterName string, update *container.ClusterUpdate) (*container.Operation, error) {
+	updateRequest := container.UpdateClusterRequest{
+		ClusterId: clusterName,
+		Zone:      zone,
+		ProjectId: a.ProjectId,
+		Update:    update,
+	}
+	resp, err := a.Container.Clients.Clusters.Update(a.ProjectId, zone, clusterName, &updateRequest).Do()
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}

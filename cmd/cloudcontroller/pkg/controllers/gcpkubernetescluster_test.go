@@ -56,7 +56,7 @@ func TestMain(m *testing.M) {
 		log.Fatalf("Failed to start test environment: %v", err)
 	}
 
-	// Create a new manager with the test config.
+	// Create a new manager with the test configmap.
 	mgr, err := ctrl.NewManager(cfg, ctrl.Options{
 		Scheme: Scheme,
 	})

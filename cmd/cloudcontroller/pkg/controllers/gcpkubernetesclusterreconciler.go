@@ -24,8 +24,10 @@ type GCPKubernetesClusterReconciler struct {
 	cloud         CloudProviders
 }
 
-func updateStatus(logger logr.Logger, cluster *benzaiten.GCPKubernetesCluster, cs benzaiten.ClusterStatus, msg string, keysAndValues ...any) {
-	logger.Info(msg, keysAndValues...)
+func updateStatus(toLog bool, logger logr.Logger, cluster *benzaiten.GCPKubernetesCluster, cs benzaiten.ClusterStatus, msg string, keysAndValues ...any) {
+	if toLog {
+		logger.Info(msg, keysAndValues...)
+	}
 	cluster.Status = benzaiten.GCPKubernetesClusterStatus{
 		Phase: cs,
 	}
@@ -57,7 +59,7 @@ func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctr
 		}
 		// create cluster
 		cr.eventRecorder.Event(&gkcCR, "Normal", "ClusterCreation", "GCP Kubernetes Cluster creating")
-		updateStatus(logger, &gkcCR, benzaiten.ClusterStatusProvisioning, "GCP Kubernetes Cluster creating", "gcpkubernetescluster", gkcCR.Name, "operation", op)
+		updateStatus(true, logger, &gkcCR, benzaiten.ClusterStatusProvisioning, "GCP Kubernetes Cluster creating", "gcpkubernetescluster", gkcCR.Name, "operation", op)
 		err = cr.Status().Update(ctx, &gkcCR)
 		if err != nil {
 			logger.Error(err, "error updating gcpkubernetescluster status")
@@ -76,7 +78,7 @@ func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctr
 				}
 				// update cluster status
 				cr.eventRecorder.Event(&gkcCR, "Normal", "ClusterProvisioning", "GCP Kubernetes Cluster provisioning")
-				updateStatus(logger, &gkcCR, benzaiten.ClusterStatusProvisioning, "GCP Kubernetes Cluster provisioning", "gcpkubernetescluster", gkcCR.Name)
+				updateStatus(false, logger, &gkcCR, benzaiten.ClusterStatusProvisioning, "GCP Kubernetes Cluster provisioning", "gcpkubernetescluster", gkcCR.Name)
 				err = cr.Status().Update(ctx, &gkcCR)
 				if err != nil {
 					logger.Error(err, "error updating gcpkubernetescluster status")
@@ -85,7 +87,7 @@ func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctr
 				if gkcCreated.Status == string(benzaiten.ClusterStatusRunning) {
 					// cluster is running
 					cr.eventRecorder.Event(&gkcCR, "Normal", "ClusterRunning", "GCP Kubernetes Cluster running")
-					updateStatus(logger, &gkcCR, benzaiten.ClusterStatusRunning, "GCP Kubernetes Cluster running", "gcpkubernetescluster", gkcCR.Name)
+					updateStatus(true, logger, &gkcCR, benzaiten.ClusterStatusRunning, "GCP Kubernetes Cluster running", "gcpkubernetescluster", gkcCR.Name)
 					err = cr.Status().Update(ctx, &gkcCR)
 					if err != nil {
 						logger.Error(err, "error updating gcpkubernetescluster status")
@@ -95,7 +97,7 @@ func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctr
 				} else if gkcCreated.Status == string(benzaiten.ClusterStatusError) || gkcCreated.Status == string(benzaiten.ClusterStatusDegraded) || gkcCreated.Status == string(benzaiten.ClusterStatusUnspecified) {
 					// cluster is in error
 					cr.eventRecorder.Event(&gkcCR, "Warning", "ClusterNotRunning", fmt.Sprintf("GCP Kubernetes Cluster status is not running: %s", gkcCreated.Status))
-					updateStatus(logger, &gkcCR, benzaiten.ClusterStatusError, "GCP Kubernetes Cluster not running", "gcpkubernetescluster", gkcCR.Name, "status", gkcCreated.Status)
+					updateStatus(true, logger, &gkcCR, benzaiten.ClusterStatusError, "GCP Kubernetes Cluster not running", "gcpkubernetescluster", gkcCR.Name, "status", gkcCreated.Status)
 					err = cr.Status().Update(ctx, &gkcCR)
 					if err != nil {
 						logger.Error(err, "error updating gcpkubernetescluster status")
@@ -111,6 +113,16 @@ func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctr
 		return ctrl.Result{}, nil
 	} else if err != nil {
 		logger.Error(err, "error getting gcpkubernetescluster")
+		return ctrl.Result{}, err
+	}
+
+	// detect cluster state
+	gkc.Status = string(benzaiten.ClusterStatusRunning)
+	cr.eventRecorder.Event(&gkcCR, "Normal", "ClusterDetection", "GCP Kubernetes Cluster found")
+	updateStatus(true, logger, &gkcCR, benzaiten.ClusterStatus(gkc.Status), "GCP Kubernetes Cluster found", "gcpkubernetescluster", gkcCR.Name, "status", gkc.Status)
+	err = cr.Status().Update(ctx, &gkcCR)
+	if err != nil {
+		logger.Error(err, "error updating gcpkubernetescluster status")
 		return ctrl.Result{}, err
 	}
 

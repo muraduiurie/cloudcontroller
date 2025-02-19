@@ -68,7 +68,7 @@ type NodePool struct {
 	Version string `json:"version,omitempty"`
 	// Config defines the node configuration of the pool.
 	// +kubebuilder:validation:Optional
-	Config *NodeConfig `json:"config,omitempty"`
+	Config *NodeConfig `json:"configmap,omitempty"`
 	// InitialNodeCount defines the initial node count for the pool.
 	// +kubebuilder:validation:Required
 	InitialNodeCount int64 `json:"nodeCount,omitempty"`
