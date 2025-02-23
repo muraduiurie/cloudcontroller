@@ -115,6 +115,7 @@ func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctr
 		logger.Error(err, "error getting gcpkubernetescluster")
 		return ctrl.Result{}, err
 	}
+	// changes
 
 	// detect cluster state
 	gkc.Status = string(benzaiten.ClusterStatusRunning)
