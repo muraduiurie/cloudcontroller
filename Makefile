@@ -41,7 +41,7 @@ build: ## Build the operator
 	docker build -t $(IMG):$(TAG) .
 	@echo "cloucontroller image built."
 
-.PHONY: build
+.PHONY: push
 push: ## Build the operator
 	@echo "Building docker image..."
 	docker push $(IMG):$(TAG)
