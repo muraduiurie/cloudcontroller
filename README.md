@@ -1,6 +1,6 @@
 # cloudcontroller
 
-Kubernetes Operator for deploying Cloud resources via Kubernetes CRDs
+Kubernetes Operator for deploying Cloud resources via Kubernetes CRDs. Written from scratch using controller-runtime library.
 
 ## Instructions:
 
