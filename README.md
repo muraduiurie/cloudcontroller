@@ -18,7 +18,7 @@ Kubernetes Operator for deploying Cloud resources via Kubernetes CRDs
 - `IMG=<image>:<tag> make push`: Push CloudController Operator Docker image
 - `IMG=<image>:<tag> make build-push`: Build and push CloudController Operator Docker image
 - `make mock`: Generate mocks
-- `make generate`: generate CRDs
+- `make generate`: Generate CRDs
 - `make install-crds`: Install CRDs
 - `make deploy`: Deploy CloudController Operator
 
