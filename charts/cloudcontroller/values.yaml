@@ -123,7 +123,7 @@ rbac:
 configMap:
   CONFIG_PATH: /app/controller-configs.yaml
   controller-configs.yaml: |
-    common:
-      secretsPath: "/var/run/secrets/controller"
     controller:
-      gcpSaFilePath: "/var/run/secrets/controller/gcp-creds.json"
+      cloudproviders:
+        gcp:
+          gcpSaFilePath: "/var/run/secrets/controller/gcp-creds.json"

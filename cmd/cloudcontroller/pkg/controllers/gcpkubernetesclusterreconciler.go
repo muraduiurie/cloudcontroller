@@ -3,15 +3,14 @@ package controllers
 import (
 	"context"
 	"fmt"
-	benzaiten "github.com/charmelionag/cloudcontroller/api/v1"
 	"github.com/go-logr/logr"
+	benzaiten "github.com/muraduiurie/cloudcontroller/api/v1"
 	"google.golang.org/api/container/v1"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"strings"
 	"time"
@@ -22,19 +21,25 @@ type GCPKubernetesClusterReconciler struct {
 	Scheme        *runtime.Scheme
 	eventRecorder record.EventRecorder
 	cloud         CloudProviders
+	Log           logr.Logger
 }
 
-func updateStatus(toLog bool, logger logr.Logger, cluster *benzaiten.GCPKubernetesCluster, cs benzaiten.ClusterStatus, msg string, keysAndValues ...any) {
-	if toLog {
-		logger.Info(msg, keysAndValues...)
-	}
+func (cr *GCPKubernetesClusterReconciler) updateStatus(ctx context.Context, cluster *benzaiten.GCPKubernetesCluster, cs benzaiten.ClusterStatus, msg, rsn, et string) error {
+	cr.eventRecorder.Event(cluster, et, rsn, msg)
 	cluster.Status = benzaiten.GCPKubernetesClusterStatus{
 		Phase: cs,
 	}
+
+	err := cr.Status().Update(ctx, cluster)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	logger := log.FromContext(ctx).WithValues("gcpkubernetescluster", req.NamespacedName)
+	logger := cr.Log.WithValues("gcpkubernetescluster", req.NamespacedName)
 	gkcCR := benzaiten.GCPKubernetesCluster{}
 	err := cr.Get(ctx, req.NamespacedName, &gkcCR)
 	if err != nil {
@@ -45,11 +50,11 @@ func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctr
 		return ctrl.Result{}, err
 	}
 	// does cluster exist in GCP?
-	gkc, err := cr.cloud.GCP.GetCluster(gkcCR.Spec.Zone, gkcCR.Spec.ClusterName)
+	_, err = cr.cloud.GCP.GetCluster(gkcCR.Spec.Zone, gkcCR.Spec.ClusterName)
 	if err != nil && notFoundGCPResource(err) {
 		// cluster does not exist in GCP
 		logger.Info("gcpkubernetescluster not found, creating cluster...")
-		op, err := cr.cloud.GCP.CreateCluster(gkcCR.Spec.Zone, &container.Cluster{
+		_, err = cr.cloud.GCP.CreateCluster(gkcCR.Spec.Zone, &container.Cluster{
 			Name:             gkcCR.Spec.ClusterName,
 			InitialNodeCount: gkcCR.Spec.InitialNodeCount,
 		})
@@ -58,9 +63,7 @@ func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctr
 			return ctrl.Result{}, err
 		}
 		// create cluster
-		cr.eventRecorder.Event(&gkcCR, "Normal", "ClusterCreation", "GCP Kubernetes Cluster creating")
-		updateStatus(true, logger, &gkcCR, benzaiten.ClusterStatusProvisioning, "GCP Kubernetes Cluster creating", "gcpkubernetescluster", gkcCR.Name, "operation", op)
-		err = cr.Status().Update(ctx, &gkcCR)
+		err = cr.updateStatus(ctx, &gkcCR, benzaiten.ClusterStatusProvisioning, "GCP Kubernetes Cluster provisioning", "ClusterProvisioning", "Normal")
 		if err != nil {
 			logger.Error(err, "error updating gcpkubernetescluster status")
 			return ctrl.Result{}, err
@@ -73,22 +76,13 @@ func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctr
 			case <-ticker.C:
 				gkcCreated, err := cr.cloud.GCP.GetCluster(gkcCR.Spec.Zone, gkcCR.Spec.ClusterName)
 				if err != nil {
-					logger.Error(err, "error verifying cluster status", "gcpkubernetescluster", gkcCR)
+					logger.Error(err, "error verifying cluster status")
 					return ctrl.Result{}, err
 				}
-				// update cluster status
-				cr.eventRecorder.Event(&gkcCR, "Normal", "ClusterProvisioning", "GCP Kubernetes Cluster provisioning")
-				updateStatus(false, logger, &gkcCR, benzaiten.ClusterStatusProvisioning, "GCP Kubernetes Cluster provisioning", "gcpkubernetescluster", gkcCR.Name)
-				err = cr.Status().Update(ctx, &gkcCR)
-				if err != nil {
-					logger.Error(err, "error updating gcpkubernetescluster status")
-					return ctrl.Result{}, err
-				}
+
 				if gkcCreated.Status == string(benzaiten.ClusterStatusRunning) {
 					// cluster is running
-					cr.eventRecorder.Event(&gkcCR, "Normal", "ClusterRunning", "GCP Kubernetes Cluster running")
-					updateStatus(true, logger, &gkcCR, benzaiten.ClusterStatusRunning, "GCP Kubernetes Cluster running", "gcpkubernetescluster", gkcCR.Name)
-					err = cr.Status().Update(ctx, &gkcCR)
+					err = cr.updateStatus(ctx, &gkcCR, benzaiten.ClusterStatusRunning, "GCP Kubernetes Cluster running", "ClusterRunning", "Normal")
 					if err != nil {
 						logger.Error(err, "error updating gcpkubernetescluster status")
 						return ctrl.Result{}, err
@@ -96,9 +90,7 @@ func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctr
 					return ctrl.Result{}, nil
 				} else if gkcCreated.Status == string(benzaiten.ClusterStatusError) || gkcCreated.Status == string(benzaiten.ClusterStatusDegraded) || gkcCreated.Status == string(benzaiten.ClusterStatusUnspecified) {
 					// cluster is in error
-					cr.eventRecorder.Event(&gkcCR, "Warning", "ClusterNotRunning", fmt.Sprintf("GCP Kubernetes Cluster status is not running: %s", gkcCreated.Status))
-					updateStatus(true, logger, &gkcCR, benzaiten.ClusterStatusError, "GCP Kubernetes Cluster not running", "gcpkubernetescluster", gkcCR.Name, "status", gkcCreated.Status)
-					err = cr.Status().Update(ctx, &gkcCR)
+					err = cr.updateStatus(ctx, &gkcCR, benzaiten.ClusterStatusError, "GCP Kubernetes Cluster in failed state", "ClusterFailedState", "Warning")
 					if err != nil {
 						logger.Error(err, "error updating gcpkubernetescluster status")
 						return ctrl.Result{}, err
@@ -109,26 +101,12 @@ func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctr
 				return ctrl.Result{}, ctx.Err()
 			}
 		}
-
-		return ctrl.Result{}, nil
 	} else if err != nil {
 		logger.Error(err, "error getting gcpkubernetescluster")
 		return ctrl.Result{}, err
 	}
-	// changes
-
-	// detect cluster state
-	gkc.Status = string(benzaiten.ClusterStatusRunning)
-	cr.eventRecorder.Event(&gkcCR, "Normal", "ClusterDetection", "GCP Kubernetes Cluster found")
-	updateStatus(true, logger, &gkcCR, benzaiten.ClusterStatus(gkc.Status), "GCP Kubernetes Cluster found", "gcpkubernetescluster", gkcCR.Name, "status", gkc.Status)
-	err = cr.Status().Update(ctx, &gkcCR)
-	if err != nil {
-		logger.Error(err, "error updating gcpkubernetescluster status")
-		return ctrl.Result{}, err
-	}
-
 	// synchronize changes if exists
-	logger.Info("gcpkubernetescluster found, synchronizing...", "gcpkubernetescluster", gkc.Name)
+	logger.Info("gcpkubernetescluster found, synchronizing...")
 
 	logger.Info("gcp kubernetes cluster reconciled")
 	return ctrl.Result{RequeueAfter: time.Second * 60}, nil
@@ -140,13 +118,14 @@ func (cr *GCPKubernetesClusterReconciler) SetupWithManager(mgr ctrl.Manager) err
 		Complete(cr)
 }
 
-func setupGCPKubernetesClusterController(mgr manager.Manager, cp CloudProviders) error {
+func setupGCPKubernetesClusterController(mgr manager.Manager, log logr.Logger, cp CloudProviders) error {
 	eventRecorder := mgr.GetEventRecorderFor("gcpkubernetescluster")
 	cc := GCPKubernetesClusterReconciler{
 		Client:        mgr.GetClient(),
 		Scheme:        mgr.GetScheme(),
 		eventRecorder: eventRecorder,
 		cloud:         cp,
+		Log:           log.WithName("GCPKubernetesClusterReconciler"),
 	}
 
 	// create GCPKubernetesCluster controller

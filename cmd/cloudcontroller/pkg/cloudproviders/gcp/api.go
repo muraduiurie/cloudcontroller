@@ -2,6 +2,7 @@ package gcp
 
 import (
 	"context"
+	"github.com/go-logr/logr"
 	"google.golang.org/api/compute/v1"
 	"google.golang.org/api/container/v1"
 	"google.golang.org/api/option"
@@ -27,7 +28,13 @@ type API struct {
 	Config
 }
 
-func NewAPI(ctx context.Context, gcpSaFilePath string) (*API, error) {
+type ClusterUpdates struct {
+	DesiredNodeCount int64 `json:"desiredNodeCount"`
+}
+
+func NewAPI(ctx context.Context, log logr.Logger, gcpSaFilePath string) (*API, error) {
+	log.Info("Creating GCP API client")
+
 	config, err := getConfig(gcpSaFilePath)
 	if err != nil {
 		return nil, err
@@ -141,12 +148,12 @@ func (a *API) DeleteCluster(zone, clusterName string) (*container.Operation, err
 	return resp, nil
 }
 
-func (a *API) UpdateCluster(zone, clusterName string, update *container.ClusterUpdate) (*container.Operation, error) {
+func (a *API) UpdateCluster(zone, clusterName string, cu *ClusterUpdates) (*container.Operation, error) {
 	updateRequest := container.UpdateClusterRequest{
 		ClusterId: clusterName,
 		Zone:      zone,
 		ProjectId: a.ProjectId,
-		Update:    update,
+		Update:    &container.ClusterUpdate{},
 	}
 	resp, err := a.Container.Clients.Clusters.Update(a.ProjectId, zone, clusterName, &updateRequest).Do()
 	if err != nil {
