@@ -3,14 +3,14 @@ package controllers
 import (
 	"context"
 	"fmt"
-	benzaiten "github.com/charmelionag/cloudcontroller/api/v1"
+	"github.com/go-logr/logr"
+	benzaiten "github.com/muraduiurie/cloudcontroller/api/v1"
 	"google.golang.org/api/container/v1"
 	kerr "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"strings"
 	"time"
@@ -21,6 +21,7 @@ type GCPKubernetesClusterReconciler struct {
 	Scheme        *runtime.Scheme
 	eventRecorder record.EventRecorder
 	cloud         CloudProviders
+	Log           logr.Logger
 }
 
 func (cr *GCPKubernetesClusterReconciler) updateStatus(ctx context.Context, cluster *benzaiten.GCPKubernetesCluster, cs benzaiten.ClusterStatus, msg, rsn, et string) error {
@@ -38,7 +39,7 @@ func (cr *GCPKubernetesClusterReconciler) updateStatus(ctx context.Context, clus
 }
 
 func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	logger := log.FromContext(ctx).WithValues("gcpkubernetescluster", req.NamespacedName)
+	logger := cr.Log.WithValues("gcpkubernetescluster", req.NamespacedName)
 	gkcCR := benzaiten.GCPKubernetesCluster{}
 	err := cr.Get(ctx, req.NamespacedName, &gkcCR)
 	if err != nil {
@@ -49,11 +50,11 @@ func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctr
 		return ctrl.Result{}, err
 	}
 	// does cluster exist in GCP?
-	gkc, err := cr.cloud.GCP.GetCluster(gkcCR.Spec.Zone, gkcCR.Spec.ClusterName)
+	_, err = cr.cloud.GCP.GetCluster(gkcCR.Spec.Zone, gkcCR.Spec.ClusterName)
 	if err != nil && notFoundGCPResource(err) {
 		// cluster does not exist in GCP
 		logger.Info("gcpkubernetescluster not found, creating cluster...")
-		_, err := cr.cloud.GCP.CreateCluster(gkcCR.Spec.Zone, &container.Cluster{
+		_, err = cr.cloud.GCP.CreateCluster(gkcCR.Spec.Zone, &container.Cluster{
 			Name:             gkcCR.Spec.ClusterName,
 			InitialNodeCount: gkcCR.Spec.InitialNodeCount,
 		})
@@ -75,7 +76,7 @@ func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctr
 			case <-ticker.C:
 				gkcCreated, err := cr.cloud.GCP.GetCluster(gkcCR.Spec.Zone, gkcCR.Spec.ClusterName)
 				if err != nil {
-					logger.Error(err, "error verifying cluster status", "gcpkubernetescluster", gkcCR)
+					logger.Error(err, "error verifying cluster status")
 					return ctrl.Result{}, err
 				}
 
@@ -105,7 +106,7 @@ func (cr *GCPKubernetesClusterReconciler) Reconcile(ctx context.Context, req ctr
 		return ctrl.Result{}, err
 	}
 	// synchronize changes if exists
-	logger.Info("gcpkubernetescluster found, synchronizing...", "gcpkubernetescluster", gkc.Name)
+	logger.Info("gcpkubernetescluster found, synchronizing...")
 
 	logger.Info("gcp kubernetes cluster reconciled")
 	return ctrl.Result{RequeueAfter: time.Second * 60}, nil
@@ -117,13 +118,14 @@ func (cr *GCPKubernetesClusterReconciler) SetupWithManager(mgr ctrl.Manager) err
 		Complete(cr)
 }
 
-func setupGCPKubernetesClusterController(mgr manager.Manager, cp CloudProviders) error {
+func setupGCPKubernetesClusterController(mgr manager.Manager, log logr.Logger, cp CloudProviders) error {
 	eventRecorder := mgr.GetEventRecorderFor("gcpkubernetescluster")
 	cc := GCPKubernetesClusterReconciler{
 		Client:        mgr.GetClient(),
 		Scheme:        mgr.GetScheme(),
 		eventRecorder: eventRecorder,
 		cloud:         cp,
+		Log:           log.WithName("GCPKubernetesClusterReconciler"),
 	}
 
 	// create GCPKubernetesCluster controller

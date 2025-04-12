@@ -3,9 +3,10 @@ package controllers
 import (
 	"context"
 	"fmt"
-	benzaiten "github.com/charmelionag/cloudcontroller/api/v1"
-	"github.com/charmelionag/cloudcontroller/pkg/cloudproviders/gcp"
+	"github.com/go-logr/logr"
 	"github.com/golang/mock/gomock"
+	benzaiten "github.com/muraduiurie/cloudcontroller/api/v1"
+	"github.com/muraduiurie/cloudcontroller/pkg/cloudproviders/gcp"
 	"google.golang.org/api/container/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -55,7 +56,7 @@ func TestMain(m *testing.M) {
 		log.Fatalf("Failed to start test environment: %v", err)
 	}
 
-	// Create a new manager with the test configmap.
+	//  Create a new manager with the test configmap.
 	mgr, err := ctrl.NewManager(cfg, ctrl.Options{
 		Scheme: Scheme,
 	})
@@ -92,12 +93,13 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func newFakeReconciler() (*GCPKubernetesClusterReconciler, error) {
+func newFakeReconciler(log logr.Logger) (*GCPKubernetesClusterReconciler, error) {
 	er := k8sMgr.GetEventRecorderFor("gcpkubernetescluster")
 	return &GCPKubernetesClusterReconciler{
 		Client:        k8sClient,
 		Scheme:        k8sScheme,
 		eventRecorder: er,
+		Log:           log,
 	}, nil
 }
 
@@ -235,9 +237,12 @@ func createFakeGKC(ctx context.Context, fakeClient client.Client, nodeCount int6
 ////////////////////////////////////////////////////
 
 func TestGKCReconciler_GetClusterNoChanges(t *testing.T) {
-	ctx := ctrl.SetupSignalHandler()
+	logger := testLogger()
+	logger.WithValues("name", "creation of existing cluster").Info("starting test")
 
-	rec, err := newFakeReconciler()
+	ctx := context.Background()
+
+	rec, err := newFakeReconciler(logger)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -266,9 +271,12 @@ func TestGKCReconciler_GetClusterNoChanges(t *testing.T) {
 }
 
 func TestGKCReconciler_CreateNewCluster(t *testing.T) {
-	ctx := ctrl.SetupSignalHandler()
+	logger := testLogger()
+	logger.WithValues("name", "creation of a new cluster").Info("starting test")
 
-	rec, err := newFakeReconciler()
+	ctx := context.Background()
+
+	rec, err := newFakeReconciler(logger)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}

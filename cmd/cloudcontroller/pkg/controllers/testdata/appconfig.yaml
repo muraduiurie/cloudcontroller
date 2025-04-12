@@ -1,0 +1,6 @@
+controller:
+  cloudproviders:
+    gcp:
+      gcpSaFilePath: "/testdata/gcp_credentials"
+    aws:
+      credentialsFilePath: "/testdata/aws_credentials"

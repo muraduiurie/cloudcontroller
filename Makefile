@@ -53,6 +53,10 @@ clean: ## Remove generated CRDs
 	rm -rf $(CRD_OUTPUT_DIR)
 	@echo "Cleanup complete."
 
+.PHONY: test
+test:
+	cd cmd/cloudcontroller && go test -v ./... && cd -
+
 .PHONY: help
 help: ## Show available make targets
 	@echo "Available targets:"
@@ -75,15 +79,3 @@ mock: ## Generate mocks
 	@echo "Generating mocks..."
 	cd cmd/cloudcontroller && mockgen -source=pkg/cloudproviders/gcp/client.go -destination=pkg/cloudproviders/gcp/mock.go -package=gcp && cd -
 	@echo "Mocks generated."
-
-.PHYONY: envtest
-envtest: ## Setup envtest
-	@echo "Setting up envtest..."
-	setup-envtest cleanup && setup-envtest use $(ENVTEST_K8S_VERSION) --bin-dir envtest
-	@echo "Setup complete."
-
-.PHYONY: envtest-clean
-envtest-clean: ## Setup envtest
-	@echo "Cleaning up envtest..."
-	setup-envtest cleanup
-	@echo "Cleaning complete."
