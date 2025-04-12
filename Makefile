@@ -5,7 +5,7 @@ ENVTEST_K8S_VERSION = 1.31.0
 
 # Ensure controller-gen is installed
 ifndef CONTROLLER_GEN
-$(error "controller-gen is not installed. Install it with: go install sigs.k8s.io/controller-tools/cmd/controller-gen@latest")
+$(error "controller-gen is not installed, install it with: go install sigs.k8s.io/controller-tools/cmd/controller-gen@latest")
 endif
 
 # Directories
