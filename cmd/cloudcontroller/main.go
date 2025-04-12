@@ -11,7 +11,7 @@ func main() {
 	logger := zap.New()
 	ctrl.SetLogger(logger)
 	log := ctrl.Log.WithName("main")
-	log.Info("setting up manager")
+	log.Info("set up manager")
 
 	// create manager
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
