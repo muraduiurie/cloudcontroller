@@ -7,6 +7,7 @@ import (
 
 func TestLoadAppConfigs(t *testing.T) {
 	os.Setenv("CONFIG_PATH", "./testdata/appconfig.yaml")
+
 	appConfigs, err := LoadAppConfigs(testLogger())
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
