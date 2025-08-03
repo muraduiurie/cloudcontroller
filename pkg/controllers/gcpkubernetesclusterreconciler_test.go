@@ -47,7 +47,7 @@ func TestMain(m *testing.M) {
 		CRDDirectoryPaths: []string{
 			filepath.Join("..", "..", "crds"),
 		},
-		BinaryAssetsDirectory: "../../../../envtest/k8s/1.31.0-linux-amd64",
+		BinaryAssetsDirectory: "../../envtest/k8s/1.31.0-linux-amd64",
 	}
 
 	var err error

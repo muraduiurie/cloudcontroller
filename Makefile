@@ -55,7 +55,7 @@ clean: ## Remove generated CRDs
 
 .PHONY: test
 test:
-	cd cmd/cloudcontroller && go test -v ./... && cd -
+	go test -v ./...
 
 .PHONY: help
 help: ## Show available make targets
